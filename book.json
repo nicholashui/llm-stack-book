@@ -1,16 +1,16 @@
 {
-  "title": "The LLM Stack",
-  "subtitle": "From Silicon to Agents",
-  "tagline": "A ground-up field guide to building, training, aligning, serving, and reasoning with large language models.",
-  "author": "An open field guide for ML/LLM engineers",
+  "title": "LLM 技術棧",
+  "subtitle": "從矽晶到代理",
+  "tagline": "一本由底層講起的實務指南：如何建構、訓練、對齊、提供推論服務，並用大型語言模型進行推理。",
+  "author": "面向機器學習與 LLM 工程師的開放實務指南",
   "parts": [
     {
       "dir": "00-frontmatter",
-      "title": "Front Matter",
+      "title": "前言",
       "chapters": [
         {
           "file": "00-preface",
-          "title": "Preface: How to Read This Book & The Map of the Stack",
+          "title": "前言：如何閱讀本書，以及技術棧全圖",
           "scope": "Orient the reader. What the LLM stack is, layer by layer (hardware -> kernels -> frameworks -> training -> alignment -> RL infra -> inference -> agents). How to use the book, the interview track, notation conventions, and a one-page 'map of the whole stack' diagram in ASCII/mermaid. Set the tone: rigorous but digestible.",
           "words": 1500,
           "model": "opus"
@@ -19,74 +19,74 @@
     },
     {
       "dir": "01-foundations",
-      "title": "Part I — Mathematical & Systems Foundations",
+      "title": "第 I 部 — 數學與系統基礎",
       "chapters": [
         {
           "file": "01-linear-algebra",
-          "title": "Linear Algebra for Deep Learning",
+          "title": "深度學習所需的線性代數",
           "scope": "Vectors, matrices, tensors; matmul as the workhorse; rank, span, basis; eigen/SVD and why low-rank matters (LoRA preview); norms; matrix calculus identities used in backprop. Numpy/torch code. Interview: derive gradient of a linear layer.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "02-probability-information",
-          "title": "Probability, Statistics & Information Theory",
+          "title": "機率、統計與資訊理論",
           "scope": "Random variables, distributions, expectation/variance, Bayes; MLE/MAP; KL divergence, cross-entropy, entropy, mutual information; perplexity; why cross-entropy is THE LLM loss. Code: compute perplexity. Interview: KL vs cross-entropy, label smoothing.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "03-calculus-optimization",
-          "title": "Calculus, Optimization & Convexity",
+          "title": "微積分、最佳化與凸性",
           "scope": "Gradients, Jacobians, Hessians, chain rule; convex vs non-convex; gradient descent variants; momentum; saddle points; Lipschitz/condition number intuition. Code: GD on a toy loss surface with plots-as-data. Interview: why SGD generalizes.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "04-numerics-precision",
-          "title": "Numerical Computing, Floating Point & Precision",
+          "title": "數值計算、浮點數與精度",
           "scope": "IEEE754, fp32/tf32/fp16/bf16/fp8 formats, dynamic range vs precision, overflow/underflow, catastrophic cancellation, stable softmax/logsumexp, Kahan summation. Why bf16 won training. Code: implement stable softmax, show fp16 overflow. Interview-critical.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "05-ml-fundamentals",
-          "title": "Machine Learning Fundamentals",
+          "title": "機器學習基礎",
           "scope": "Supervised/unsupervised/self-supervised; bias-variance; over/underfitting; regularization (L1/L2/dropout/early stop); train/val/test, cross-validation, data leakage; metrics (precision/recall/F1/AUC/calibration); the generalization puzzle. Interview breadth core.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "06-neural-nets-from-scratch",
-          "title": "Neural Networks From Scratch: MLPs & Backprop",
+          "title": "從零實作神經網絡：多層感知器與反向傳播",
           "scope": "Build an MLP and backprop engine from scratch in pure numpy (micrograd-style autograd). Forward, backward, activations, init (Xavier/Kaiming), vanishing/exploding gradients, batchnorm. Full runnable from-scratch code. Interview: implement backprop on a whiteboard.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "07-autodiff-pytorch",
-          "title": "Automatic Differentiation & PyTorch Internals",
+          "title": "自動微分與 PyTorch 內部機制",
           "scope": "Reverse-mode autodiff, computation graphs, the tape; PyTorch autograd, leaf tensors, .grad, no_grad, custom autograd.Function; dispatcher, ATen, views vs copies, contiguity, broadcasting. Code: custom autograd Function. Interview: explain autograd.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "08-gpu-architecture",
-          "title": "GPU Architecture & The Memory Hierarchy",
+          "title": "GPU 架構與記憶體階層",
           "scope": "SMs, warps, threads, CUDA cores vs Tensor Cores; HBM vs L2 vs SMEM vs registers; memory bandwidth vs compute; occupancy; A100/H100/H200/B200 specs and NVLink; arithmetic intensity. The single most important systems chapter for kernels/inference.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "09-parallel-collectives",
-          "title": "Parallel Computing & Collective Communication",
+          "title": "平行計算與集合通訊",
           "scope": "Processes/threads, SPMD; NCCL collectives (all-reduce, all-gather, reduce-scatter, broadcast, all-to-all); ring vs tree all-reduce; bandwidth/latency cost models; topology (NVLink/NVSwitch/InfiniBand). The substrate under all distributed training. Code: torch.distributed demo.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "10-accelerator-landscape",
-          "title": "The Accelerator Landscape: TPUs, Trainium, AMD/ROCm & Gaudi",
+          "title": "加速器版圖：TPU、Trainium、AMD／ROCm 與 Gaudi",
           "scope": "A vendor-by-vendor survey of the non-NVIDIA accelerators an LLM engineer now ships on: Google TPU (v5e/v6/v7, pods, XLA/JAX), AWS Trainium/Inferentia (Neuron SDK), AMD Instinct MI300X/MI350 with ROCm+HIP, Intel Gaudi. The programming-model and portability story end to end — CUDA vs HIP/hipify, Triton-on-AMD, XLA vs eager, what ports cleanly and what doesn't — plus reading spec sheets (HBM capacity/bandwidth, FP8/FP4 TFLOPS) to pick hardware for a training or serving workload. Includes systolic-array vs SIMT intuition.",
           "words": 5500,
           "model": "opus"
@@ -95,88 +95,88 @@
     },
     {
       "dir": "02-transformer",
-      "title": "Part II — The Transformer Architecture",
+      "title": "第 II 部 — Transformer 架構",
       "chapters": [
         {
           "file": "01-tokenization",
-          "title": "Tokenization: BPE, WordPiece, Unigram & Byte-Level",
+          "title": "分詞：BPE、WordPiece、Unigram 與位元組級",
           "scope": "Why subwords; BPE algorithm from scratch, byte-level BPE (GPT), WordPiece (BERT), Unigram/SentencePiece; tiktoken; vocab size tradeoffs; special tokens; multilingual & code tokenization pitfalls; tokenization's effect on math/digits. Full from-scratch BPE trainer code.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "02-embeddings-input",
-          "title": "Embeddings & The Input Pipeline",
+          "title": "嵌入與輸入管線",
           "scope": "Token embeddings, weight tying, embedding matrices, the unembedding/logits; one-hot vs lookup; embedding dimension; how text becomes tensors end to end. Code: embedding layer, weight tying.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "03-attention-from-scratch",
-          "title": "The Attention Mechanism From Scratch",
+          "title": "從零實作注意力機制",
           "scope": "Build scaled dot-product attention from first principles: queries/keys/values, why scale by sqrt(d), softmax, the attention matrix, masking (causal/padding). Derive it as differentiable soft retrieval. Full numpy+torch from-scratch implementation. The crown-jewel chapter.",
           "words": 6000,
           "model": "opus"
         },
         {
           "file": "04-mha-gqa-mla",
-          "title": "Multi-Head Attention, MQA, GQA & MLA",
+          "title": "多頭注意力、MQA、GQA 與 MLA",
           "scope": "Multi-head attention motivation and implementation; KV-cache cost; Multi-Query (MQA), Grouped-Query (GQA), and Multi-head Latent Attention (MLA, DeepSeek). Memory/quality tradeoffs. Code: implement MHA->GQA. Interview: why GQA.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "05-positional-encoding",
-          "title": "Positional Encodings: Sinusoidal, Learned, RoPE & ALiBi",
+          "title": "位置編碼：正弦、可學習、RoPE 與 ALiBi",
           "scope": "Why transformers need position info; absolute sinusoidal, learned; relative; RoPE derivation and implementation; ALiBi; NoPE; context-length extension via RoPE scaling (NTK, YaRN, position interpolation). Full RoPE from scratch. Critical & interview-hot.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "06-transformer-block",
-          "title": "The Transformer Block: Norms, Residuals, MLPs & Activations",
+          "title": "Transformer 區塊：正規化、殘差、MLP 與激活函數",
           "scope": "Residual stream, LayerNorm vs RMSNorm, pre-norm vs post-norm, the FFN/MLP, activation functions (ReLU/GELU/SwiGLU/GeGLU), dropout, the full block wiring. Pre-norm stability. Code: a complete block. Interview: why pre-norm, why RMSNorm.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "07-build-gpt-from-scratch",
-          "title": "Building a GPT From Scratch (nanoGPT-style)",
+          "title": "從零做出一個 GPT（nanoGPT 風格）",
           "scope": "Assemble everything into a working decoder-only GPT: config, blocks, weight init, forward, training loop on tiny data, sampling/generation. Complete, runnable, heavily commented from-scratch implementation in PyTorch. The capstone of Part II.",
           "words": 6500,
           "model": "opus"
         },
         {
           "file": "08-architecture-variants",
-          "title": "Architecture Variants: Encoder-Decoder, Decoder-Only & Prefix-LM",
+          "title": "架構變體：編碼器—解碼器、僅解碼器與 Prefix-LM",
           "scope": "BERT (encoder), T5 (encoder-decoder), GPT (decoder-only), prefix-LM; masking patterns; bidirectional vs causal; when each is used; the decoder-only convergence. Interview: BERT vs GPT, masked vs causal LM.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "09-mixture-of-experts",
-          "title": "Mixture-of-Experts (MoE) Architectures",
+          "title": "專家混合（MoE）架構",
           "scope": "Sparse MoE: router/gating, top-k, experts as FFNs; load balancing (aux loss, expert-choice), capacity factor, token dropping; Switch/GShard/Mixtral/DeepSeek-MoE/fine-grained+shared experts; expert parallelism preview. Code: a toy MoE layer. Hot topic.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "10-modern-arch-improvements",
-          "title": "Modern Architecture Improvements & Design Choices",
+          "title": "現代架構改進與設計取捨",
           "scope": "What changed from GPT-2 to Llama/Qwen/DeepSeek/Gemma: RMSNorm, SwiGLU, RoPE, GQA, QK-norm, no biases, untied/tied embeddings, depth vs width, attention sinks, logit soft-capping. A practitioner's 'modern transformer recipe'.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "11-ssm-and-alternatives",
-          "title": "Beyond Attention: SSMs, Mamba, RWKV & Linear Attention",
+          "title": "注意力之外：SSM、Mamba、RWKV 與線性注意力",
           "scope": "Quadratic attention bottleneck; linear attention; state space models (S4, Mamba/Mamba-2 selective scan); RWKV; RetNet; hybrid architectures (Jamba, hybrid Mamba-Transformer). Tradeoffs vs transformers. Where the frontier is heading.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "12-diffusion-nonAR-lms",
-          "title": "Diffusion & Non-Autoregressive Language Models",
+          "title": "擴散模型與非自回歸語言模型",
           "scope": "The non-autoregressive paradigm for text: discrete/masked diffusion LMs (LLaDA, Dream), the absorbing/masked diffusion objective vs next-token prediction, iterative parallel denoising and remasking schedules, semi-autoregressive Block Diffusion, KV-cache reuse and flexible-length generation, and production systems (Mercury). Inference economics (parallel decode, tokens/sec) and quality trade-offs vs autoregressive transformers, plus bidirectional/reversal advantages. Code: a tiny masked-diffusion text sampler.",
           "words": 5500,
           "model": "opus"
@@ -185,123 +185,123 @@
     },
     {
       "dir": "03-pretraining",
-      "title": "Part III — Pretraining at Scale",
+      "title": "第 III 部 — 大規模預訓練",
       "chapters": [
         {
           "file": "01-pretraining-data",
-          "title": "Pretraining Data: Sources, Crawling & The Data Pipeline",
+          "title": "預訓練數據：來源、爬取與數據管線",
           "scope": "Web crawl (Common Crawl), CommonCrawl->WET/WARC, curated corpora (books, code, arXiv, Wikipedia), licensing, the data 'recipe' and mixture weights; FineWeb/Dolma/RedPajama/The Pile case studies; data engineering at scale. Code: a streaming data pipeline sketch.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "02-data-cleaning-dedup",
-          "title": "Data Cleaning, Deduplication & Quality Filtering",
+          "title": "數據清洗、去重與品質過濾",
           "scope": "Language ID, heuristic filters, quality classifiers, toxicity/PII removal; exact and fuzzy dedup (MinHash/LSH, suffix arrays); near-dup across docs; decontamination vs benchmarks; the impact of dedup on quality. Code: MinHash dedup from scratch.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "03-pretraining-objective",
-          "title": "The Pretraining Objective & Loss",
+          "title": "預訓練目標與損失",
           "scope": "Next-token prediction, teacher forcing, the cross-entropy/NLL loss, shifting labels, loss masking, document packing, the causal mask; bits-per-byte; UL2/span corruption alternatives. Code: the exact loss computation. Interview: what does an LLM optimize.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "04-scaling-laws",
-          "title": "Scaling Laws: Kaplan, Chinchilla & Beyond",
+          "title": "縮放定律：Kaplan、Chinchilla 及其後",
           "scope": "Power-law scaling of loss with params/data/compute; Kaplan vs Chinchilla compute-optimal; the N≈20*tokens rule; inference-aware/over-training; emergent abilities debate; how to plan a training run's budget. Code: fit a scaling law. Interview favorite.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "05-distributed-data-parallel",
-          "title": "Distributed Training I: Data Parallelism, DDP, ZeRO & FSDP",
+          "title": "分散式訓練 I：數據平行、DDP、ZeRO 與 FSDP",
           "scope": "Data parallelism, gradient all-reduce, DDP internals (bucketing, overlap); the memory problem (params+grads+optimizer states); ZeRO stages 1/2/3, FSDP sharding, parameter/gradient/optimizer sharding, communication tradeoffs. Code: FSDP example. Core systems chapter.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "06-distributed-model-parallel",
-          "title": "Distributed Training II: Tensor, Pipeline, Sequence & Expert Parallelism",
+          "title": "分散式訓練 II：張量、管線、序列與專家平行",
           "scope": "Tensor parallelism (Megatron column/row split, all-reduce points); pipeline parallelism (GPipe, 1F1B, interleaved, bubbles); sequence/context parallelism (Ring Attention); expert parallelism for MoE; how to combine into 3D/4D/5D parallelism. The hard, high-value chapter.",
           "words": 6000,
           "model": "opus"
         },
         {
           "file": "07-megatron-deepspeed",
-          "title": "Megatron-LM, DeepSpeed & Parallelism in Practice",
+          "title": "Megatron-LM、DeepSpeed 與實務中的平行策略",
           "scope": "How real frameworks compose parallelism; Megatron-Core, DeepSpeed (ZeRO, ZeRO-Offload/Infinity), the parallelism config space; choosing TP/PP/DP/EP degrees for a cluster; MFU/HFU; a worked configuration for a 70B run. Practitioner-focused.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "08-mixed-precision-fp8",
-          "title": "Mixed Precision, bf16 & FP8 Training",
+          "title": "混合精度、bf16 與 FP8 訓練",
           "scope": "AMP, loss scaling (static/dynamic), master weights, why bf16 needs no loss scaling; FP8 training (E4M3/E5M2, per-tensor/blockwise scaling, Transformer Engine, DeepSeek FP8); numerics and stability. Code: AMP loop. Increasingly interview-relevant.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "09-optimizers",
-          "title": "Optimizers: SGD, Adam, Adafactor, Lion, Muon & Shampoo",
+          "title": "優化器：SGD、Adam、Adafactor、Lion、Muon 與 Shampoo",
           "scope": "SGD+momentum, Adam/AdamW derivation and bias correction, decoupled weight decay; memory of optimizer states; Adafactor; Lion; Shampoo/second-order; Muon (the newest, newsmaking optimizer) and orthogonalization. Code: implement AdamW. Interview: Adam vs SGD.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "10-lr-schedules-hparams",
-          "title": "Learning Rate Schedules, Warmup, Batch Size & Hyperparameters",
+          "title": "學習率排程、預熱、批次大小與超參數",
           "scope": "Warmup rationale, cosine/linear/WSD (warmup-stable-decay) schedules, LR vs batch size scaling (linear/sqrt), critical batch size, gradient accumulation, weight decay, grad clipping; muP/maximal-update parameterization for HP transfer. Practical recipes.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "11-training-stability",
-          "title": "Training Stability, Loss Spikes & Debugging Large Runs",
+          "title": "訓練穩定性、損失尖峰與大型任務的除錯",
           "scope": "Loss spikes and divergence, causes (bad data, LR, fp issues), mitigations (skip batches, z-loss, qk-norm, embedding norm, careful init); monitoring (grad norm, activation stats); the lived experience of babysitting a big run. War stories + checklist.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "12-checkpointing-fault-tolerance",
-          "title": "Checkpointing, Fault Tolerance & Long-Running Jobs",
+          "title": "檢查點、容錯與長時間任務",
           "scope": "Sharded/distributed checkpointing, async checkpointing, save/restore optimizer+RNG state, resuming, elastic training, hardware failure rates at scale, in-memory checkpointing, determinism/reproducibility. Systems-engineering view.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "13-long-context-pretraining",
-          "title": "Long-Context Pretraining & Context Extension",
+          "title": "長上下文預訓練與上下文延伸",
           "scope": "Why long context is hard (quadratic + memory), training vs extension; RoPE scaling (PI, NTK, YaRN), continued pretraining on long docs, document packing for long context, needle-in-haystack, ring/context parallelism for training. Connects to inference KV cache.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "14-data-mixing-curriculum",
-          "title": "Data Mixing, Domain Weighting & Curriculum",
+          "title": "數據混合、領域加權與課程式訓練",
           "scope": "Choosing the proportions of each data source (web, code, math, books, multilingual) and scheduling them over training. Proxy-model methods (DoReMi/Group-DRO), online/adaptive mixing, manual mixture ablations, upsampling vs deduplication trade-offs, and curriculum strategies (easy-to-hard, context-window scheduling, mid-training/annealing with high-quality data near the end). Code: a DoReMi-style reweighting toy.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "15-synthetic-data",
-          "title": "Synthetic Data for Pre- and Post-Training",
+          "title": "預訓練與後訓練用的合成數據",
           "scope": "Generating training tokens with models rather than scraping them: rephrasing/restyling the web (WRAP), textbook-style generation (Phi, Cosmopedia/FineWeb-Edu), instruction/QA-augmented pretraining, and reasoning-trace distillation for post-training. Mixing ratios of natural vs synthetic, scaling behavior, and failure modes: model collapse, distributional narrowing, contamination, and verification/filtering of generated data.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "16-continual-pretraining",
-          "title": "Continual & Domain-Adaptive Pretraining",
+          "title": "持續預訓練與領域自適應預訓練",
           "scope": "Extending an existing base model instead of retraining: learning-rate re-warming/re-decay, replay ratios to fight catastrophic forgetting, domain/language adaptation (code, medical, legal, new languages), and streaming-data scenarios. Model-growth and weight-reuse (depth/width expansion, dense-to-MoE upcycling, vocabulary/tokenizer transfer) and planning CPT compute with loss-trajectory models.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "17-end-to-end-pretrain-recipe",
-          "title": "Training an LLM From Scratch: The End-to-End Recipe",
+          "title": "從零訓練 LLM：端到端配方",
           "scope": "The capstone that wires every prior stage into one runnable path from raw text to a trained, sampled-from model: corpus -> tokenizer -> uint16 shards -> GPT -> AdamW + cosine schedule -> torchrun training loop with gradient accumulation and checkpointing -> monitoring (loss, grad norm, MFU) -> eval (perplexity) -> inference/sampling. Concrete configs and expectations at four scales (laptop/single-GPU/8-GPU/multi-node) plus a failure-mode playbook, linking to every deep chapter for the internals.",
           "words": 6000,
           "model": "sonnet"
@@ -310,74 +310,74 @@
     },
     {
       "dir": "04-kernels-efficiency",
-      "title": "Part IV — Kernels, Efficiency & Quantization",
+      "title": "第 IV 部 — Kernel、效率與量化",
       "chapters": [
         {
           "file": "01-roofline-performance",
-          "title": "The Roofline Model & Performance Engineering",
+          "title": "屋頂線模型與效能工程",
           "scope": "Arithmetic intensity, memory-bound vs compute-bound, the roofline; FLOPs of attention vs FFN; how to estimate model FLOPs and MFU; profiling (nsight, torch profiler); the mental model behind every optimization. Code: estimate FLOPs/MFU. Foundational for Part IV.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "02-flash-attention-1",
-          "title": "FlashAttention I: IO-Awareness & The Online Softmax",
+          "title": "FlashAttention I：I/O 感知與線上 softmax",
           "scope": "The attention memory bottleneck (materializing NxN); tiling, the online/streaming softmax with running max & denominator (derive it carefully), recomputation in backward, why it's exact not approximate; the IO-aware analysis. Full pseudo-code + math. Marquee chapter.",
           "words": 6500,
           "model": "opus"
         },
         {
           "file": "03-flash-attention-2-3",
-          "title": "FlashAttention 2 & 3: Work Partitioning, Warp Specialization & FP8",
+          "title": "FlashAttention 2 與 3：工作劃分、warp 特化與 FP8",
           "scope": "FA2: better parallelism over seqlen, fewer non-matmul FLOPs, warp partitioning. FA3 (Hopper): warp-specialization, producer/consumer with TMA, async, FP8 attention, incoherent processing; comparison to alternatives. Connects to GPU arch chapter.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "04-triton-kernels",
-          "title": "Writing GPU Kernels with Triton",
+          "title": "用 Triton 撰寫 GPU kernel",
           "scope": "Triton programming model (program_id, blocks, masks, pointers), a vector-add, a fused softmax, a matmul, and a simplified flash-attention kernel — all as runnable Triton code with explanation. The most hands-on kernel chapter.",
           "words": 6000,
           "model": "opus"
         },
         {
           "file": "05-cuda-essentials",
-          "title": "CUDA Programming Essentials for ML Engineers",
+          "title": "機器學習工程師的 CUDA 程式設計要點",
           "scope": "CUDA kernels, grid/block/thread, shared memory, coalescing, bank conflicts, warp primitives (shuffle), a tiled matmul in CUDA C++, comparison with Triton, when to drop to CUDA. Code: tiled matmul kernel.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "06-paged-attention-kv",
-          "title": "PagedAttention & KV-Cache Memory Management",
+          "title": "PagedAttention 與 KV 快取的記憶體管理",
           "scope": "KV cache size math, fragmentation, the OS-paging analogy, block tables, copy-on-write for shared prefixes, the PagedAttention kernel; how this unlocks high-throughput serving. Bridges kernels and serving (vLLM).",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "07-quantization-ptq",
-          "title": "Quantization I: Post-Training Quantization (GPTQ, AWQ, SmoothQuant)",
+          "title": "量化 I：訓練後量化（GPTQ、AWQ、SmoothQuant）",
           "scope": "Quantization basics (scale/zero-point, symmetric/asymmetric, per-tensor/channel/group), outlier problem, GPTQ (Hessian-based), AWQ (activation-aware), SmoothQuant (migrating difficulty), LLM.int8(). Math + code sketch. Interview: how/why quantize.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "08-quantization-formats-qat",
-          "title": "Quantization II: INT4/INT8/FP8, GGUF, bitsandbytes & QAT",
+          "title": "量化 II：INT4／INT8／FP8、GGUF、bitsandbytes 與 QAT",
           "scope": "Weight-only vs weight+activation, INT4/NF4, FP8 inference, GGUF/llama.cpp k-quants, bitsandbytes, double quantization; quantization-aware training, QLoRA's NF4; KV-cache quantization; accuracy/perf tradeoffs across the zoo.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "09-compilers-fusion",
-          "title": "Kernel Fusion, torch.compile, CUDA Graphs & Compilers",
+          "title": "Kernel 融合、torch.compile、CUDA Graph 與編譯器",
           "scope": "Op fusion, why launch overhead matters, CUDA graphs, torch.compile (TorchDynamo/AOTAutograd/Inductor), graph breaks, the compiler stack (XLA, TVM); how compilation speeds training+inference. Code: torch.compile before/after.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "10-memory-efficient-training",
-          "title": "Memory-Efficient Training: Checkpointing, Offloading & LoRA Math",
+          "title": "省記憶體訓練：檢查點、卸載與 LoRA 的數學",
           "scope": "Activation/gradient checkpointing (recompute vs store), the activation-memory equation, CPU/NVMe offloading, selective recomputation, the full memory budget breakdown for training; why PEFT slashes memory. Practical memory accounting.",
           "words": 4500,
           "model": "sonnet"
@@ -386,95 +386,95 @@
     },
     {
       "dir": "05-posttraining-alignment",
-      "title": "Part V — Post-Training & Alignment",
+      "title": "第 V 部 — 後訓練與對齊",
       "chapters": [
         {
           "file": "01-sft-instruction-tuning",
-          "title": "Supervised Fine-Tuning & Instruction Tuning",
+          "title": "監督式微調與指令調校",
           "scope": "From base to instruct; SFT objective, instruction datasets (FLAN, Alpaca, ShareGPT, OpenHermes), data quality > quantity (LIMA), the three-stage recipe (SFT->preference->RL); catastrophic forgetting; full vs partial finetuning. Code: an SFT loop.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "02-chat-templates-packing",
-          "title": "Chat Templates, Data Formatting & Sequence Packing",
+          "title": "對話模板、數據格式與序列打包",
           "scope": "ChatML/Llama/Qwen templates, special/role tokens, system prompts, masking the prompt vs completion (train on completions only), multi-turn loss masking, sample packing with attention boundaries, tool-call formatting. Code: build a chat template + loss mask.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "03-peft-lora-qlora",
-          "title": "PEFT I: LoRA, QLoRA, DoRA & The Adapter Family",
+          "title": "PEFT I：LoRA、QLoRA、DoRA 與適配器家族",
           "scope": "Low-rank adaptation math (W+BA, rank r, alpha scaling, init), where to apply, merging; QLoRA (NF4 + paged optimizers + double quant); DoRA, rsLoRA, LoRA+, VeRA; serving many LoRAs. Full from-scratch LoRA implementation. High-value + interview.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "04-peft-prompt-merging",
-          "title": "PEFT II: Prompt/Prefix Tuning, IA3, Model Merging & Soups",
+          "title": "PEFT II：提示／前綴調校、IA3、模型合併與模型湯",
           "scope": "Prompt tuning, prefix tuning, P-tuning v2, IA3; model merging (linear, SLERP, TIES, DARE, task arithmetic), model soups, Frankenmerges; when merging beats finetuning. Code: TIES merge sketch.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "05-rlhf-reward-modeling",
-          "title": "The RLHF Pipeline & Reward Modeling",
+          "title": "RLHF 管線與獎勵建模",
           "scope": "The InstructGPT recipe end to end; preference data collection, the Bradley-Terry model, reward model training (pairwise loss), reward model evaluation/reward hacking, the actor/critic/reward/reference four-model setup. Code: BT reward loss. Cornerstone.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "06-ppo-for-llms",
-          "title": "Policy Gradients & PPO for Language Models",
+          "title": "策略梯度與語言模型上的 PPO",
           "scope": "RL formalization of generation (tokens as actions), REINFORCE, baselines, advantage, GAE; PPO clipped objective, value function, KL penalty to reference, the full PPO-for-LLM loss and loop; why PPO is finicky. Heavy math + pseudocode. Marquee RL chapter.",
           "words": 6000,
           "model": "opus"
         },
         {
           "file": "07-dpo-and-variants",
-          "title": "Direct Preference Optimization & Its Variants",
+          "title": "直接偏好最佳化及其變體",
           "scope": "DPO derivation (the RLHF objective has a closed-form optimal policy -> a classification loss), the implicit reward, beta; IPO, KTO (prospect theory, unpaired), ORPO (odds-ratio, no ref model), SimPO, CPO, the DPO-vs-PPO debate. Code: the DPO loss. Interview-hot.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "08-grpo-rloo",
-          "title": "GRPO, RLOO & Critic-Free RL",
+          "title": "GRPO、RLOO 與無評論器強化學習",
           "scope": "Removing the value model: REINFORCE Leave-One-Out (RLOO), Group Relative Policy Optimization (GRPO, group-normalized advantages), the DeepSeek-R1 recipe; GRPO loss in detail, length/format rewards, recent GRPO fixes (Dr.GRPO, token-level, clip-higher). Code: GRPO. Very current.",
           "words": 6000,
           "model": "opus"
         },
         {
           "file": "09-rlvr-reasoning",
-          "title": "RL with Verifiable Rewards (RLVR) & The Reasoning Recipe",
+          "title": "可驗證獎勵的強化學習（RLVR）與推理配方",
           "scope": "Verifiable rewards (math/code/exact-match), no reward model needed; the R1-Zero phenomenon, emergent long CoT, 'aha moments'; reward design for verifiable domains, sandboxed code execution; from RLVR to general reasoning. The defining 2024-25 idea.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "10-reasoning-test-time-compute",
-          "title": "Reasoning, Chain-of-Thought & Test-Time Compute",
+          "title": "推理、思維鏈與測試時計算",
           "scope": "CoT prompting, self-consistency, ToT/graph-of-thought, process vs outcome reward models (PRM/ORM), search (MCTS, best-of-n, beam), test-time scaling laws, o1/R1-style long thinking, budget forcing. How 'thinking' became a scaling axis.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "11-constitutional-rlaif",
-          "title": "Constitutional AI, RLAIF & Self-Improvement",
+          "title": "憲法式 AI、RLAIF 與自我改進",
           "scope": "AI feedback instead of human (RLAIF), Constitutional AI (critique+revise, a constitution), self-rewarding LMs, self-play, rejection sampling / STaR / ReST, weak-to-strong; reducing human-label cost. Where alignment data comes from at scale.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "12-distillation-compression",
-          "title": "Distillation, Model Compression & Knowledge Transfer",
+          "title": "蒸餾、模型壓縮與知識遷移",
           "scope": "Knowledge distillation (soft targets, temperature), on-policy vs off-policy distillation, sequence-level KD, distilling reasoning (R1->small), pruning (structured/unstructured, SparseGPT, Wanda), speculative-decoding's draft models as distillation. Code: KD loss.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "13-reward-hacking-failures",
-          "title": "Reward Hacking, Over-Optimization & Alignment Failures",
+          "title": "獎勵投機、過度最佳化與對齊失敗",
           "scope": "Goodhart's law, reward over-optimization (the KL-reward frontier), reward model exploitation, sycophancy, length bias, spurious format rewards, specification gaming; mitigations (KL control, reward ensembles, RM updates). Crucial for RL practitioners.",
           "words": 4500,
           "model": "sonnet"
@@ -483,88 +483,88 @@
     },
     {
       "dir": "06-rl-infra",
-      "title": "Part VI — RL Infrastructure (Deep Dive)",
+      "title": "第 VI 部 — 強化學習基礎設施（深入）",
       "chapters": [
         {
           "file": "01-anatomy-rl-system",
-          "title": "The Anatomy of an RL-for-LLM System",
+          "title": "LLM 強化學習系統的構造",
           "scope": "The components: actor (policy), rollout/generation engine, reward/verifier, learner/trainer, reference model, replay/experience buffer; the data flow; why RL infra is uniquely hard (generation + training in one loop, weight sync). The mental model for Part VI.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "02-generation-training-loop",
-          "title": "The Generation–Training Loop & Rollout Engines",
+          "title": "生成—訓練迴圈與 rollout 引擎",
           "scope": "On-policy vs off-policy, the rollout phase (batched generation with vLLM/SGLang inside training), experience collection, advantage computation, minibatch updates; throughput bottlenecks (generation dominates); overlapping generation and training. Core RL-infra concept.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "03-trl",
-          "title": "TRL: HuggingFace's RL Library",
+          "title": "TRL：Hugging Face 的強化學習程式庫",
           "scope": "TRL architecture: SFTTrainer, RewardTrainer, DPOTrainer, PPOTrainer, GRPOTrainer; how it integrates accelerate/PEFT/vLLM; config and a runnable GRPO/DPO example; strengths/limits. The most accessible entry point. Code-heavy.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "04-verl",
-          "title": "veRL: HybridFlow & The Single-Controller Architecture",
+          "title": "veRL：HybridFlow 與單控制器架構",
           "scope": "veRL (volcano engine RL): the HybridFlow paper's single-controller + multi-controller hybrid, the 3D-HybridEngine, resharding between train (FSDP/Megatron) and rollout (vLLM/SGLang) layouts, placement groups, Ray; why veRL scales. The flagship modern RL framework.",
           "words": 6000,
           "model": "opus"
         },
         {
           "file": "05-openrlhf-nemo-ray",
-          "title": "OpenRLHF, NeMo-Aligner & Ray-Based Systems",
+          "title": "OpenRLHF、NeMo-Aligner 與以 Ray 為基礎的系統",
           "scope": "OpenRLHF (Ray + vLLM + DeepSpeed, distributed actor/critic/RM); NeMo-Aligner (Megatron-based, TRT-LLM rollouts); Ray as the orchestration substrate (actors, placement, object store); comparison of design choices across frameworks.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "06-prime-rl-async",
-          "title": "Prime-RL, Async RL & Decentralized Training",
+          "title": "Prime-RL、非同步強化學習與去中心化訓練",
           "scope": "Asynchronous/off-policy RL (decoupled generation and training), staleness and importance sampling corrections, Prime Intellect's prime-rl and decentralized/globally-distributed RL (INTELLECT), TOPLOC verification; pipelined async rollouts. The async frontier.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "07-colocated-vs-disaggregated",
-          "title": "Colocated vs Disaggregated RL & Weight Synchronization",
+          "title": "共置與解耦的強化學習，以及權重同步",
           "scope": "Sharing GPUs between training and rollout (colocate, time-slice, offload) vs separate pools (disaggregate); weight sync mechanisms (NCCL broadcast, CUDA IPC, checkpoint reload), the resharding problem between training and inference parallelism layouts; latency/utilization tradeoffs. Deep infra.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "08-reward-verifiers-sandboxes",
-          "title": "Reward Engineering, Verifiers & Sandboxes",
+          "title": "獎勵工程、驗證器與沙盒",
           "scope": "Building reward functions: rule-based verifiers (math equivalence, code unit tests), sandboxed execution (security, isolation, throughput), LLM-judge rewards, reward shaping, multi-objective/weighted rewards, format vs correctness; verifier infra (e.g. sandboxes, reward servers). Practical.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "09-advantage-kl-tricks",
-          "title": "Advantage Estimation, KL Control & Stability Tricks",
+          "title": "優勢估計、KL 控制與穩定技巧",
           "scope": "GAE vs Monte-Carlo vs group-relative advantages; advantage normalization/whitening; KL estimators (k1/k2/k3), KL in reward vs loss, adaptive KL; clipping (PPO ratio, clip-higher, dual-clip), entropy bonus, loss aggregation (token vs sequence mean), the bag of stabilization tricks. Very practical.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "10-agentic-multiturn-rl",
-          "title": "Agentic & Multi-Turn RL",
+          "title": "代理式與多輪強化學習",
           "scope": "RL over multi-turn / tool-using / environment-interacting agents; trajectory-level credit assignment, turn-level rewards, environment design (RAGEN, ReACT-style), masking observations/tool outputs from loss, partial rollouts; the hard problems of agentic RL. Connects to Part VIII.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "11-scaling-rl-tricks",
-          "title": "Scaling RL: Throughput, Load Balancing & The Latest Tricks",
+          "title": "擴展強化學習：吞吐量、負載均衡與最新技巧",
           "scope": "Generation load imbalance (variable-length rollouts), dynamic sampling/filtering (DAPO), over-long filtering, partial rollout, continuous batching in RL, replay, curriculum, the latest published tricks (DAPO, VAPO, dr.grpo, length control) and where throughput is won. State-of-the-art roundup.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "12-rl-data-curriculum-replay",
-          "title": "RL Data, Curriculum & Replay Management",
+          "title": "強化學習的數據、課程與重放管理",
           "scope": "How prompts/tasks flow into an RL run: dataset construction and quality control for RLVR/agentic tasks, difficulty estimation and difficulty-targeted online selection (keeping prompts near ~50% pass rate), prompt curriculum, dynamic sampling to avoid zero-variance groups, and prioritized/rollout replay buffers. The data-side levers that determine RL sample efficiency and throughput. Code: a dynamic-sampling + difficulty-bucketing loop.",
           "words": 5000,
           "model": "opus"
@@ -573,102 +573,102 @@
     },
     {
       "dir": "07-inference-serving",
-      "title": "Part VII — Inference & Serving",
+      "title": "第 VII 部 — 推論與服務",
       "chapters": [
         {
           "file": "01-anatomy-inference",
-          "title": "The Anatomy of LLM Inference: Prefill, Decode & The KV Cache",
+          "title": "LLM 推論的構造：預填、解碼與 KV 快取",
           "scope": "The two phases (compute-bound prefill vs memory-bound decode), the KV cache and its size math, why decode is bandwidth-bound, tokens/sec ceilings, the latency metrics (TTFT, TPOT, ITL), Little's law for throughput. The foundation of Part VII.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "02-continuous-batching",
-          "title": "Continuous Batching & Request Scheduling",
+          "title": "連續批次與請求排程",
           "scope": "Static vs dynamic vs continuous (iteration-level) batching, Orca's insight, the scheduler, prefill/decode interleaving, priority and fairness, preemption; how continuous batching multiplies throughput. Code: a toy scheduler.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "03-vllm-internals",
-          "title": "vLLM: Architecture, PagedAttention & Internals",
+          "title": "vLLM：架構、PagedAttention 與內部機制",
           "scope": "vLLM design: PagedAttention (recap), the block manager, the scheduler, the engine/executor, V1 architecture, prefix caching, speculative decoding support, multi-LoRA; how to actually run and tune it. The dominant OSS serving engine.",
           "words": 6000,
           "model": "opus"
         },
         {
           "file": "04-sglang-radixattention",
-          "title": "SGLang: RadixAttention & Structured Programs",
+          "title": "SGLang：RadixAttention 與結構化程式",
           "scope": "SGLang's RadixAttention (automatic KV reuse via a radix tree of prefixes), the frontend language (gen/select/fork/join), the runtime, constrained decoding, zero-overhead scheduler; comparison with vLLM. User has sglang locally — be concrete.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "05-trtllm-tgi-stacks",
-          "title": "TensorRT-LLM, TGI & Other Serving Stacks",
+          "title": "TensorRT-LLM、TGI 與其他服務技術棧",
           "scope": "TensorRT-LLM (compiled engines, in-flight batching, kernels), Text Generation Inference, llama.cpp/Ollama, LMDeploy, MLC; the tradeoff space (portability vs peak perf); when to pick which. Practitioner survey.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "06-speculative-decoding",
-          "title": "Speculative Decoding: Draft Models, Medusa, EAGLE & Lookahead",
+          "title": "推測解碼：草稿模型、Medusa、EAGLE 與 Lookahead",
           "scope": "The accept/reject sampling that preserves the target distribution (derive it), draft-then-verify, draft model choice, Medusa heads, EAGLE/EAGLE-2/3 (feature-level), lookahead decoding, tree attention, acceptance rate vs speedup. Code: speculative sampling. Interview-relevant.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "07-prefix-caching",
-          "title": "Prefix Caching & KV-Cache Reuse",
+          "title": "前綴快取與 KV 快取重用",
           "scope": "Automatic prefix caching (hash-based block sharing), system-prompt reuse, RadixAttention vs vLLM APC, cache eviction (LRU), cross-request sharing, the economics of shared prefixes (agents, few-shot, RAG). Practical wins.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "08-disaggregated-chunked-prefill",
-          "title": "Disaggregated Prefill/Decode & Chunked Prefill",
+          "title": "解耦的預填／解碼與分塊預填",
           "scope": "Why separate prefill and decode (different resource profiles), KV transfer between pools, chunked prefill (split long prefills to avoid stalling decode), the prefill-decode interference problem; DistServe/Splitwise ideas. Cutting-edge serving.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "09-sampling-decoding",
-          "title": "Sampling Strategies & Decoding Algorithms",
+          "title": "取樣策略與解碼演算法",
           "scope": "Greedy, temperature, top-k, top-p/nucleus, min-p, typical, repetition/frequency penalties, beam search, contrastive/DoLa, the bias-diversity tradeoff; logit processors; how temperature interacts with RL/distillation. Code: implement samplers.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "10-structured-generation",
-          "title": "Structured & Constrained Generation",
+          "title": "結構化與約束生成",
           "scope": "JSON/grammar-constrained decoding via finite-state machines and pushdown automata; Outlines, XGrammar, llguidance, jsonformer; logit masking, the FSM compilation, speed (XGrammar's overlap with sampling), tool-call enforcement. Code: a regex-constrained sampler.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "11-multi-gpu-inference",
-          "title": "Multi-GPU & Multi-Node Inference",
+          "title": "多 GPU 與多節點推論",
           "scope": "Tensor parallelism for serving, pipeline parallelism, expert parallelism (large MoE), data parallel replicas, when each helps latency vs throughput, communication overhead in decode, wide-EP (DeepSeek). Sizing a deployment.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "12-inference-economics",
-          "title": "Inference Economics: Latency, Throughput & Cost",
+          "title": "推論經濟學：延遲、吞吐量與成本",
           "scope": "The latency-throughput-cost triangle, batching vs latency SLOs, tokens-per-dollar, GPU selection, capacity planning, autoscaling, the math of $/1M tokens, why decode-heavy workloads are expensive; optimizing the bill. Ties Part VII together.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "13-serving-moe",
-          "title": "Serving Mixture-of-Experts: Expert Parallelism & All-to-All Inference",
+          "title": "服務專家混合模型：專家平行與 All-to-All 推論",
           "scope": "The distinct serving problem of large sparse MoE models (DeepSeek-V3/R1, Llama-4, Qwen-MoE): expert-parallel (EP) inference, all-to-all token dispatch/combine (DeepEP), expert load balancing and hot-expert skew at decode, attention-DP + expert-EP hybrid layouts, and large-EP deployments. MoE-specific KV and expert-weight offloading, prefill-vs-decode EP differences, and the economics of dense-equivalent throughput.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "14-multi-tenant-lora-serving",
-          "title": "Multi-Tenant LoRA & Adapter Serving at Scale",
+          "title": "多租戶 LoRA 與大規模適配器服務",
           "scope": "Serving hundreds-to-thousands of LoRA adapters over a shared base model: batched heterogeneous-adapter kernels (Punica/SGMV), S-LoRA / LoRAX architectures, adapter registry, hot-swapping and tiered adapter storage, unified vs disaggregated execution, and cross-model prefix-cache reuse. Throughput/SLO trade-offs, per-tenant fairness, and the vLLM/SGLang multi-LoRA paths. Code: a batched multi-adapter forward.",
           "words": 5000,
           "model": "opus"
@@ -677,67 +677,67 @@
     },
     {
       "dir": "08-agents-harness",
-      "title": "Part VIII — Agents & Harness Engineering",
+      "title": "第 VIII 部 — 代理與駕馭層工程",
       "chapters": [
         {
           "file": "01-tool-use-function-calling",
-          "title": "Tool Use & Function Calling",
+          "title": "工具使用與函式呼叫",
           "scope": "How models call tools: schemas, the function-calling fine-tune, parsing/validation, parallel tool calls, the tool-call loop, error handling, structured outputs; training for tool use. Code: a tool-calling loop. Foundation of agents.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "02-agentic-loop",
-          "title": "The Agentic Loop: ReAct, Plan-Execute & Reflection",
+          "title": "代理迴圈：ReAct、計劃—執行與反思",
           "scope": "ReAct (reason+act), the observe-think-act loop, planning (decomposition, plan-execute), reflection/self-correction, tree search over actions, when to stop; failure modes (loops, derailment). Code: a minimal ReAct agent.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "03-harness-coding-agent",
-          "title": "Harness Engineering: Building a Coding Agent",
+          "title": "駕馭層工程：打造程式代理",
           "scope": "Anatomy of a Claude-Code/Codex-style harness: the system prompt, the tool set (read/edit/bash/search), context assembly, the agent loop, permissions, sub-agents, todo/planning, verification; what separates a good harness from a model. The user wanted this explicitly.",
           "words": 6000,
           "model": "opus"
         },
         {
           "file": "04-context-engineering",
-          "title": "Context Engineering & Management",
+          "title": "上下文工程與管理",
           "scope": "The context window as the scarce resource: what to put in it, retrieval vs stuffing, compaction/summarization, context rot, lost-in-the-middle, structured context (files, scratchpads), token budgeting, prompt caching for agents. The discipline of context.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "05-agent-memory",
-          "title": "Memory Systems for Agents",
+          "title": "代理的記憶系統",
           "scope": "Short-term (context) vs long-term (external) memory, memory stores (vector, file, graph), write/read/reflect, episodic vs semantic, memory compaction, the file-as-memory pattern; how agents persist across sessions. Code: a simple memory store.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "06-mcp",
-          "title": "The Model Context Protocol (MCP)",
+          "title": "模型上下文協定（MCP）",
           "scope": "MCP architecture: hosts/clients/servers, tools/resources/prompts, transport (stdio/HTTP), why a standard protocol matters, building an MCP server, security considerations. The emerging integration standard. Code: a minimal MCP server.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "07-multi-agent-systems",
-          "title": "Multi-Agent Systems & Orchestration",
+          "title": "多代理系統與編排",
           "scope": "Orchestrator-worker, debate, role specialization, handoffs, shared memory/blackboard, when multi-agent helps vs hurts, cost; frameworks (LangGraph, AutoGen, CrewAI, OpenAI Swarm); the workflow-vs-agent distinction. Patterns and anti-patterns.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "08-agent-evaluation",
-          "title": "Agent Evaluation & Benchmarks",
+          "title": "代理評測與基準",
           "scope": "Evaluating agents: SWE-bench/SWE-bench-Verified, WebArena, GAIA, tau-bench, terminal-bench; trajectory vs outcome scoring, pass@k, harness effects on scores, reproducibility, contamination. How agentic progress is measured.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "09-prompt-engineering",
-          "title": "Prompt Engineering as Engineering",
+          "title": "把提示工程做成工程",
           "scope": "Systematic prompting: instructions, few-shot, role, format control, decomposition, CoT, self-consistency, prompt optimization (DSPy, APE), evals-driven iteration, prompt caching; why this is real engineering not folklore. Practical patterns.",
           "words": 4500,
           "model": "sonnet"
@@ -746,46 +746,46 @@
     },
     {
       "dir": "09-rag-retrieval",
-      "title": "Part IX — Retrieval & RAG",
+      "title": "第 IX 部 — 檢索與 RAG",
       "chapters": [
         {
           "file": "01-embeddings-representation",
-          "title": "Embeddings & Representation Learning",
+          "title": "嵌入與表徵學習",
           "scope": "Dense embeddings, contrastive learning (InfoNCE), sentence/text embedding models, training (in-batch negatives, hard negatives), Matryoshka embeddings, instruction embeddings, pooling; evaluation (MTEB). Code: contrastive loss. Bridges to RAG.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "02-vector-databases-ann",
-          "title": "Vector Databases & Approximate Nearest Neighbor Search",
+          "title": "向量資料庫與近似最近鄰搜尋",
           "scope": "Exact vs approximate search, the curse of dimensionality, HNSW (graph), IVF, PQ/product quantization, ScaNN, the recall-latency-memory tradeoff, vector DBs (FAISS, Milvus, etc.). Code: brute-force vs HNSW intuition. Interview: how ANN works.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "03-rag-architectures",
-          "title": "Retrieval-Augmented Generation Architectures",
+          "title": "檢索增強生成（RAG）架構",
           "scope": "The RAG pipeline (chunk->embed->index->retrieve->generate), why RAG (grounding, freshness, citations), naive RAG and its failure modes, evaluation (faithfulness, relevance, RAGAS); the design space. Code: a minimal RAG.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "04-chunking-reranking-hybrid",
-          "title": "Chunking, Reranking & Hybrid Search",
+          "title": "分塊、重排序與混合搜尋",
           "scope": "Chunking strategies (fixed/semantic/late chunking), hybrid search (BM25 + dense, reciprocal rank fusion), cross-encoder rerankers, query rewriting/HyDE, metadata filtering; the practical levers that make RAG work.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "05-advanced-rag",
-          "title": "Advanced RAG: GraphRAG, Agentic RAG & Long-Context vs RAG",
+          "title": "進階 RAG：GraphRAG、代理式 RAG，以及長上下文對比 RAG",
           "scope": "GraphRAG (entity/community graphs), agentic/iterative retrieval, multi-hop, self-RAG/corrective RAG, contextual retrieval, the long-context-vs-RAG debate and when each wins, RAG over code/structured data. The frontier of retrieval.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "06-multimodal-visual-retrieval",
-          "title": "Multimodal & Visual-Document Retrieval: ColPali & Late Interaction",
+          "title": "多模態與視覺文件檢索：ColPali 與晚期交互",
           "scope": "Retrieval when the corpus is images, screenshots, slides and scanned PDFs: CLIP/SigLIP cross-modal dense retrieval, ColBERT-style late interaction extended to vision (ColPali, ColQwen2), multi-vector indexing (PLAID/HNSW over patch embeddings), and the OCR-free 'page-as-image' RAG pipeline feeding retrieved pages to a VLM. Serving/indexing trade-offs of multi-vector embeddings, visual reranking, and evaluation (ViDoRe).",
           "words": 5000,
           "model": "opus"
@@ -794,39 +794,39 @@
     },
     {
       "dir": "10-multimodal-and-arch",
-      "title": "Part X — Multimodal & Generative Frontiers",
+      "title": "第 X 部 — 多模態與生成前沿",
       "chapters": [
         {
           "file": "01-vision-transformers",
-          "title": "Vision Transformers & Image Encoders",
+          "title": "視覺 Transformer 與影像編碼器",
           "scope": "ViT (patches as tokens), CLIP (contrastive image-text), SigLIP, image preprocessing, patch embeddings, register tokens, DINOv2; how images enter the transformer world. Code: patchify + ViT block.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "02-vision-language-models",
-          "title": "Vision-Language Models",
+          "title": "視覺—語言模型",
           "scope": "Connecting a vision encoder to an LLM: LLaVA (projector), Flamingo (cross-attn), Qwen-VL/InternVL, native-resolution/any-resolution, the visual-token explosion, training stages, OCR/document understanding. The dominant multimodal recipe.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "03-audio-speech-multimodal",
-          "title": "Audio, Speech & Multimodal Fusion",
+          "title": "音訊、語音與多模態融合",
           "scope": "Audio tokenization (codecs, Whisper encoder), ASR/TTS, speech LLMs, audio-in/audio-out, real-time/streaming, any-to-any fusion; the multimodal token-stream view. Survey + key ideas.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "04-diffusion-generative",
-          "title": "Diffusion Models & Generative Modeling (Breadth)",
+          "title": "擴散模型與生成式建模（廣度）",
           "scope": "Diffusion (forward/reverse process, DDPM, score matching, classifier-free guidance, latent diffusion), flow matching, comparison with autoregressive; diffusion LMs; why an LLM engineer should understand it. Interview breadth. Conceptual + key math.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "05-unified-any-to-any",
-          "title": "Unified & Any-to-Any Models",
+          "title": "統一模型與任意到任意模型",
           "scope": "Unified understanding+generation (autoregressive image gen, Chameleon/transfusion), mixed-modal training, tokenizing everything, the 'one model many modalities' trend; open problems. Forward-looking.",
           "words": 4500,
           "model": "sonnet"
@@ -835,46 +835,46 @@
     },
     {
       "dir": "11-evaluation",
-      "title": "Part XI — Evaluation",
+      "title": "第 XI 部 — 評測",
       "chapters": [
         {
           "file": "01-eval-landscape",
-          "title": "The Evaluation Problem & Benchmark Landscape",
+          "title": "評測問題與基準版圖",
           "scope": "Why eval is hard, the benchmark zoo (MMLU/MMLU-Pro, GSM8K/MATH, HumanEval/MBPP, GPQA, BBH, IFEval, AIME, ARC-AGI), contamination, saturation, multiple-choice pitfalls, the gap between benchmarks and usefulness. Critical literacy.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "02-llm-as-judge",
-          "title": "LLM-as-a-Judge & Automated Evaluation",
+          "title": "以 LLM 作評判，以及自動化評測",
           "scope": "Using LLMs to grade: pairwise vs pointwise, rubric grading, position/verbosity/self-preference bias and mitigations, agreement with humans, Chatbot Arena/Elo, judge calibration; reward models as judges. Code: a judge prompt + Elo.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "03-eval-harnesses",
-          "title": "Building Eval Harnesses",
+          "title": "打造評測駕馭層",
           "scope": "lm-evaluation-harness, HELM, the mechanics (prompt formatting, log-likelihood vs generation scoring, few-shot, normalization), reproducibility, building a custom eval, statistical significance / error bars. Practical.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "04-reasoning-coding-agentic-evals",
-          "title": "Reasoning, Coding & Agentic Evals",
+          "title": "推理、程式與代理式評測",
           "scope": "Pass@k, code execution sandboxes, math verification, reasoning-trace evaluation, agentic eval harnesses, test-time-compute-aware eval, avoiding reward hacking in evals; how frontier reasoning is measured.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "05-redteaming-safety-eval",
-          "title": "Red-Teaming, Safety & Robustness Evaluation",
+          "title": "紅隊測試、安全與穩健性評測",
           "scope": "Safety benchmarks, jailbreak/adversarial eval, automated red-teaming, refusal vs over-refusal, bias/toxicity eval, robustness to perturbation, capability elicitation/dangerous-capability evals. The safety-eval toolkit.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "06-statistical-rigor-eval",
-          "title": "Statistical Rigor in Evaluation: Confidence Intervals & Significance",
+          "title": "評測中的統計嚴格性：信賴區間與顯著性",
           "scope": "Reporting eval results like a scientist: bootstrap confidence intervals on accuracy/Elo, paired significance tests (paired t, McNemar, Wilcoxon) for A-vs-B, variance decomposition across prompts/seeds/judges, and power analysis to size a test set. Item-response theory and adaptive/efficient evaluation, and why overlapping CIs on a leaderboard mean 'no real gap.' Code: bootstrap CI + a paired test.",
           "words": 5000,
           "model": "opus"
@@ -883,60 +883,60 @@
     },
     {
       "dir": "12-production-mlops",
-      "title": "Part XII — Production, Systems & MLOps",
+      "title": "第 XII 部 — 生產系統與 MLOps",
       "chapters": [
         {
           "file": "01-serving-system-design",
-          "title": "Designing an LLM Serving System",
+          "title": "設計 LLM 推論服務系統",
           "scope": "End-to-end system design: gateway, load balancer, model routing, replica/cluster sizing, queueing, SLOs (p50/p99 TTFT), autoscaling on GPUs, multi-model serving, batching policy; a reference architecture. Doubles as interview system-design.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "02-observability-llmops",
-          "title": "Observability, Logging & LLMOps",
+          "title": "可觀測性、日誌與 LLMOps",
           "scope": "Tracing requests, token/latency/cost metrics, prompt/response logging, evaluation-in-production, drift detection, A/B testing, the LLMOps lifecycle, tools (Langfuse, etc.); what to monitor and alert on.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "03-caching-routing-cost",
-          "title": "Caching, Routing & Cost Control in Production",
+          "title": "生產環境中的快取、路由與成本控制",
           "scope": "Semantic/exact caching, prompt caching economics, model routing/cascades (cheap-then-expensive), speculative routing, quantized fallbacks, batching for cost, spot/preemptible GPUs; engineering the bill down.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "04-safety-guardrails",
-          "title": "Safety, Guardrails & Content Moderation",
+          "title": "安全、防護欄與內容審核",
           "scope": "Input/output guardrails, moderation classifiers, PII detection/redaction, system-prompt defenses, refusal policies, structured safety (constitutions), Llama Guard / shield models; the production safety stack.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "05-data-flywheel",
-          "title": "Data Flywheels & Continuous Improvement",
+          "title": "數據飛輪與持續改進",
           "scope": "Logging -> labeling -> retraining loops, preference collection in production, active learning, distillation from production traffic, eval-gated deployment, the compounding data advantage; building a self-improving product.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "06-security-prompt-injection",
-          "title": "Security: Prompt Injection, Jailbreaks & Defenses",
+          "title": "安全：提示注入、越獄與防禦",
           "scope": "Direct/indirect prompt injection, data exfiltration via tools, the lethal trifecta (private data + untrusted content + exfiltration), jailbreak taxonomy, defenses (sandboxing, least privilege, dual-LLM, input/output filtering), supply-chain risks. Essential security.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "07-online-eval-ab-testing",
-          "title": "Online Evaluation: A/B Testing, Canaries & Guardrail Metrics",
+          "title": "線上評測：A/B 測試、金絲雀與防護欄指標",
           "scope": "Connecting offline benchmarks to live signal: designing A/B and interleaving experiments for LLM features, proxy/guardrail metrics (resolution rate, deflection, thumbs-up, regeneration) and avoiding metric gaming, sequential testing and CUPED for low-traffic products, shadow deployments and canary rollouts, and live judges scoring sampled production traffic. Offline-online correlation, novelty effects, and feedback-loop bias.",
           "words": 5000,
           "model": "sonnet"
         },
         {
           "file": "08-reliability-engineering",
-          "title": "Reliability Engineering for LLM Systems: SLOs & Incident Response",
+          "title": "LLM 系統的可靠性工程：SLO 與事故回應",
           "scope": "SRE adapted to LLMs: SLIs/SLOs for probabilistic systems (latency tails, availability, quality SLOs), a four-root-cause diagnosis tree (model/provider regression, prompt change, retrieval drift, upstream data), prompt/model rollback, and trace-attached postmortems. The LLM-specific failure of gradual silent quality collapse, fallback/degradation design, provider-outage runbooks and multi-provider failover.",
           "words": 5000,
           "model": "sonnet"
@@ -945,46 +945,46 @@
     },
     {
       "dir": "13-interp-safety-gov",
-      "title": "Part XIII — Interpretability, Safety & Governance",
+      "title": "第 XIII 部 — 可解釋性、安全與治理",
       "chapters": [
         {
           "file": "01-mechanistic-interpretability",
-          "title": "Mechanistic Interpretability & Model Internals",
+          "title": "機制可解釋性與模型內部",
           "scope": "Looking inside a transformer: the residual-stream/superposition view, probing, the logit lens, activation patching and causal tracing, circuit discovery, and sparse autoencoders (SAEs/transcoders) for feature extraction. Practical interpretability for debugging, activation steering, feature-based monitoring and safety; tooling (TransformerLens, SAE frameworks) and honest limits. Code: logit lens + a tiny activation-patching experiment from scratch.",
           "words": 6000,
           "model": "opus"
         },
         {
           "file": "02-knowledge-editing-unlearning",
-          "title": "Knowledge Editing & Machine Unlearning",
+          "title": "知識編輯與機器遺忘",
           "scope": "Surgically changing what a model knows without full retraining: locate-then-edit (ROME, MEMIT, AlphaEdit), memory/adapter methods (GRACE, WISE), and failure modes (ripple effects, forgetting at scale, locality). Machine unlearning for compliance/safety (TOFU/MUSE benchmarks, gradient-ascent and editing-as-unlearning recipes), and links to right-to-be-forgotten. Code: a minimal rank-one (ROME-style) edit.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "03-privacy-memorization-dp",
-          "title": "Privacy, Memorization & Differential Privacy for LLMs",
+          "title": "隱私、記憶化與 LLM 的差分隱私",
           "scope": "Why and when models memorize training data; extraction, reconstruction and membership-inference attacks; canary-based privacy auditing; PII leakage. Defenses across the lifecycle: data sanitization/PII scrubbing, DP-SGD and DP fine-tuning with their utility/compute trade-offs, and inference-time mitigations. Threat modeling and compliance framing (GDPR, HIPAA). Code: a membership-inference + canary-extraction demo.",
           "words": 5000,
           "model": "opus"
         },
         {
           "file": "04-watermarking-provenance",
-          "title": "Watermarking, Provenance & AI-Content Detection",
+          "title": "浮水印、溯源與 AI 內容偵測",
           "scope": "Statistical text watermarking (Kirchenbauer green-list, distortion-free schemes) and image/audio/video watermarking (SynthID-class), and their robustness to paraphrase/removal attacks. Content-provenance standards (C2PA content credentials, signed manifests), the limits of post-hoc AI-text detectors, and the compliance landscape (EU AI Act Article 50 transparency). Code: a green-list watermark embedder + detector from scratch.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "05-ai-safety-oversight",
-          "title": "AI Safety: Scalable Oversight, Dangerous-Capability Evals & Frontier Safety",
+          "title": "AI 安全：可擴展監督、危險能力評測與前沿安全",
           "scope": "The technical safety agenda beyond RLHF: scalable oversight (debate, recursive reward modeling, weak-to-strong generalization), dangerous-capability and misuse evaluations, deception/sandbagging and reasoning faithfulness, the control-vs-alignment distinction, and frontier-safety frameworks / responsible scaling policies. How labs operationalize 'is this model safe to deploy.' Cross-links to evaluation and red-teaming.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "06-governance-compliance",
-          "title": "AI Governance, Compliance & Regulation",
+          "title": "AI 治理、合規與法規",
           "scope": "The regulatory and governance layer engineers must implement: the EU AI Act's obligations and timeline (GPAI duties, enforcement/fines from Aug 2026, the 1e25-FLOP systemic-risk threshold, technical documentation and training-data summaries), risk tiers and high-risk requirements, plus model cards, datasheets, transparency/eval reporting, copyright/provenance, serious-incident reporting and audit trails. NIST AI RMF and ISO/IEC 42001 as complementary frameworks.",
           "words": 4500,
           "model": "sonnet"
@@ -993,88 +993,88 @@
     },
     {
       "dir": "14-capstone",
-      "title": "Part XIV — Capstone: Build a 100M LLM End-to-End",
+      "title": "第 XIV 部 — 總整專題：端到端做出一億參數 LLM",
       "chapters": [
         {
           "file": "01-overview-and-landscape",
-          "title": "The Capstone: Building Stack-100M, and the 2026 Small-Model Landscape",
+          "title": "總整專題：打造 Stack-100M，以及 2026 年的小模型版圖",
           "words": 5500,
           "model": "sonnet",
           "scope": "FIRST read capstone/PLAN.md IN FULL — it is the canonical spec for the whole Capstone (the exact Stack-100M config, data mix, ~20B-token over-training budget, compute tiers, and every SOTA component with its citation); stay strictly consistent with it and cross-link the deeper book chapter this builds on. Motivate the whole project: why build a ~100M model from scratch, and what you will end with (base -> chat -> narrow tool-using agent, runnable on a laptop). Survey the 2025-2026 small-model landscape as the modern update to Karpathy's ~$100-$200 GPT-2 reproduction: SmolLM2/SmolLM3 (HuggingFace), Qwen3-0.6B, MobileLLM (deep-thin), and the component transfer from frontier labs (DeepSeek, Kimi, GLM, Liquid LFM2). Explain the three forces that made small models good: massive over-training past Chinchilla, data quality, and architecture/optimizer advances. Lay out the budget/hardware tiers (1xA100 ~$100 flagship; 4090; free Colab on-ramp) and the repo tour of capstone/ (package stacklm). Define 'narrow but real'. This chapter sets expectations and the map for Part XIV."
         },
         {
           "file": "02-data-pipeline",
-          "title": "Data: Sourcing, Filtering, Dedup, Tokenize & Pack ~20B Tokens",
+          "title": "數據：蒐集、過濾、去重、分詞，並打包約 200 億個詞元",
           "words": 6000,
           "model": "sonnet",
           "scope": "FIRST read capstone/PLAN.md IN FULL — it is the canonical spec for the whole Capstone (the exact Stack-100M config, data mix, ~20B-token over-training budget, compute tiers, and every SOTA component with its citation); stay strictly consistent with it and cross-link the deeper book chapter this builds on. Build the data pipeline for a ~20B-token over-trained run. Justify over-training (200 tokens/param vs Chinchilla's ~20) as deployment economics. The mix and why (FineWeb-Edu bulk, Cosmopedia synthetic textbooks, a little code + math), citing the SmolLM/FineWeb recipe. Streaming download, quality filtering, exact + MinHash near-dedup, tokenize, pack to 2048 with document-aware attention masking (no cross-doc attention; position-id reset), shard to uint16 memmap .bin files. Give real code for dedup, packing, and a streaming memmap dataset. Include a tiny in-process synthetic-corpus fallback so the pipeline is runnable offline. Worked example: token/byte accounting and shard sizes."
         },
         {
           "file": "03-tokenizer",
-          "title": "A Byte-Level BPE Tokenizer From Scratch (and Why Vocab Size Is a Design Lever at 100M)",
+          "title": "從零實作位元組級 BPE 分詞器（以及為何詞彙大小在一億參數時是設計槓桿）",
           "words": 5500,
           "model": "sonnet",
           "scope": "FIRST read capstone/PLAN.md IN FULL — it is the canonical spec for the whole Capstone (the exact Stack-100M config, data mix, ~20B-token over-training budget, compute tiers, and every SOTA component with its citation); stay strictly consistent with it and cross-link the deeper book chapter this builds on. Implement a real byte-level BPE tokenizer from scratch (train merges, encode, decode) at vocab_size=32768. Center the small-model lesson: at 100M params a 50k x 512 embedding is ~26% of the model, so vocab size trades off against depth/width — show the tradeoff table and the tied-embedding interaction. Reserve special tokens up front for later stages (bos/eos/pad, chat roles, tool-call/result). Connect to the book's Tokenizer Playground tool and the tokenization chapter. Worked example: compression ratio on a sample, and embedding-param cost vs vocab."
         },
         {
           "file": "04-architecture",
-          "title": "The Stack-100M Architecture: SOTA Components, Cited and Assembled",
+          "title": "Stack-100M 架構：引用並組裝當前最佳組件",
           "words": 6500,
           "model": "opus",
           "scope": "FIRST read capstone/PLAN.md IN FULL — it is the canonical spec for the whole Capstone (the exact Stack-100M config, data mix, ~20B-token over-training budget, compute tiers, and every SOTA component with its citation); stay strictly consistent with it and cross-link the deeper book chapter this builds on. Assemble the exact Stack-100M architecture (deep-thin decoder, config in PLAN.md sec1) from current SOTA components, each cited: pre-norm + RMSNorm; RoPE with NoPE on every 4th layer (SmolLM3); GQA 2 KV heads; QK-norm; SwiGLU; tied embeddings; z-loss/logit soft-cap. Give clean from-scratch PyTorch for every module and the full model, plus the exact parameter-accounting arithmetic reproducing ~101M. Then teach the efficiency VARIANTS as options with code and citations: MLA (DeepSeek-V2) for KV compression, MTP (DeepSeek-V3) auxiliary multi-token head, and a Liquid LFM2-style gated short-conv hybrid block. Justify deep-thin (MobileLLM). Ablate only where it teaches (e.g. why QK-norm/NoPE). This is a reasoning-heavy flagship chapter."
         },
         {
           "file": "05-mini-scaling-laws",
-          "title": "Mini Scaling Laws: Fit Your Own Law Before Spending the Budget",
+          "title": "小型縮放定律：先擬合自己的定律，再花預算",
           "words": 6000,
           "model": "opus",
           "scope": "FIRST read capstone/PLAN.md IN FULL — it is the canonical spec for the whole Capstone (the exact Stack-100M config, data mix, ~20B-token over-training budget, compute tiers, and every SOTA component with its citation); stay strictly consistent with it and cross-link the deeper book chapter this builds on. The differentiator chapter. Train a ladder of tiny models (~4M/9M/19M/43M) under the shared recipe and fit your own scaling law L(N,D)=E+A/N^a+B/D^b; also run IsoFLOP profiles (Chinchilla method) to locate compute-optimal (N*,D*) and fit the exponents. Use the 6ND FLOP rule. Extrapolate to choose/confirm the 100M config and PREDICT its loss, then argue for deliberately over-training past compute-optimal (deployment economics). Give runnable fitting code (scipy/numpy curve fit) and plots described in text/figures. Cross-link the scaling-laws chapter and the Scaling-Law-Optimal tool. Reasoning-heavy."
         },
         {
           "file": "06-optimizer-and-schedule",
-          "title": "Optimizer & Schedule: Muon + MuonClip and Warmup-Stable-Decay",
+          "title": "優化器與排程：Muon、MuonClip 與預熱—穩定—衰減",
           "words": 5500,
           "model": "opus",
           "scope": "FIRST read capstone/PLAN.md IN FULL — it is the canonical spec for the whole Capstone (the exact Stack-100M config, data mix, ~20B-token over-training budget, compute tiers, and every SOTA component with its citation); stay strictly consistent with it and cross-link the deeper book chapter this builds on. Implement the modern optimizer stack: Muon (Newton-Schulz orthogonalized momentum, Jordan et al. 2024) for 2D hidden matrices + AdamW for embeddings/norms/1D params (the standard hybrid; used at scale by Kimi K2). Add MuonClip/QK-clip (Kimi K2) for attention-logit stability. Implement the WSD (Warmup-Stable-Decay) LR schedule (MiniCPM; DeepSeek) and explain why its decay phase pairs with mid-training annealing; contrast with cosine. Cover weight decay, grad clipping, betas, bf16, effective batch via grad accumulation. Give runnable Muon + WSD code. Cross-link the optimizers and LR-schedule chapters. Reasoning-heavy."
         },
         {
           "file": "07-pretraining-run",
-          "title": "The Pretraining Run: A Complete Single-GPU Training Loop",
+          "title": "預訓練運行：完整的單 GPU 訓練迴圈",
           "words": 6500,
           "model": "sonnet",
           "scope": "FIRST read capstone/PLAN.md IN FULL — it is the canonical spec for the whole Capstone (the exact Stack-100M config, data mix, ~20B-token over-training budget, compute tiers, and every SOTA component with its citation); stay strictly consistent with it and cross-link the deeper book chapter this builds on. The full, complete, runnable single-GPU (A100) pretraining loop wiring together the data, model, optimizer, and schedule: bf16 autocast, gradient accumulation, gradient clipping, optional activation checkpointing, checkpoint+resume (model/opt/step/rng), throughput and MFU measurement against 6ND/peak FLOPs, periodic held-out eval + sample generation, and loss logging. Document expected loss curve magnitudes ('on the order of'). Add a scale-out note (DDP then FSDP for the 8xH100 box, one-paragraph multinode pointer) but keep single-GPU as the flagship. Cross-link mixed-precision, DDP/FSDP, checkpointing, training-stability chapters. Show the config for A100/4090/Colab tiers."
         },
         {
           "file": "08-mid-training",
-          "title": "Mid-Training: Quality Annealing, Long-Context Extension & Capability Injection",
+          "title": "中期訓練：品質退火、長上下文延伸與能力注入",
           "words": 5500,
           "model": "opus",
           "scope": "FIRST read capstone/PLAN.md IN FULL — it is the canonical spec for the whole Capstone (the exact Stack-100M config, data mix, ~20B-token over-training budget, compute tiers, and every SOTA component with its citation); stay strictly consistent with it and cross-link the deeper book chapter this builds on. Explain and implement mid-training (the phase between pretraining and post-training; OLMo 2). Three moves: (1) WSD decay-phase annealing on a higher-quality mix (more Cosmopedia, instruction-flavored, math/code) for a big quality jump at little compute; (2) long-context extension to seq_len 8192 via RoPE base rescaling / YaRN-style, cross-linking the long-context chapter; (3) capability injection (concentrated math/code) so the downstream narrow agent has a base. Runnable continued-training code that resumes from the pretrain checkpoint into the decay+anneal phase. This begins the 'narrow but real' specialization."
         },
         {
           "file": "09-post-training",
-          "title": "Post-Training: SFT, DPO, and Narrow RLVR (GRPO) That Works at 100M",
+          "title": "後訓練：在一億參數上可行的 SFT、DPO 與窄域 RLVR（GRPO）",
           "words": 6000,
           "model": "opus",
           "scope": "FIRST read capstone/PLAN.md IN FULL — it is the canonical spec for the whole Capstone (the exact Stack-100M config, data mix, ~20B-token over-training budget, compute tiers, and every SOTA component with its citation); stay strictly consistent with it and cross-link the deeper book chapter this builds on. Post-train Stack-100M. SFT with a ChatML-like chat template using the reserved special tokens, packed instruction data, loss masked to assistant tokens. Then DPO (Rafailov et al. 2023) preference optimization from pairs (feasible at 100M/$; contrast with heavy PPO-RLHF, cross-link RLHF chapter). Then a small RLVR/GRPO run (GRPO from DeepSeekMath, Shao et al. 2024; RL with verifiable rewards) on a NARROW verifiable task (integer arithmetic / simple word problems) with exact-match reward — demonstrating RLVR works at 100M when the task is narrow. Runnable SFT, DPO, and a minimal GRPO loop. Be honest about what post-training does and does not buy at this scale. Reasoning-heavy."
         },
         {
           "file": "10-agentic-narrow",
-          "title": "A Narrow Auto-Research Agent: ReAct, Tool-Use & Retrieval by Distillation",
+          "title": "窄域自動研究代理：以蒸餾得到 ReAct、工具使用與檢索",
           "words": 6000,
           "model": "opus",
           "scope": "FIRST read capstone/PLAN.md IN FULL — it is the canonical spec for the whole Capstone (the exact Stack-100M config, data mix, ~20B-token over-training budget, compute tiers, and every SOTA component with its citation); stay strictly consistent with it and cross-link the deeper book chapter this builds on. Push to the frontier of what 100M can do: a narrow ReAct agent (Yao et al. 2022) that interleaves thought -> tool-call -> observation, with two tools (a calculator and a retriever over a small local corpus, BM25/embedding-lite). The key technique: DISTILL trajectories from a large teacher model, filter to successful ones, format with tool special tokens, and SFT the 100M model on the traces (the only way 100M does multi-step tool use); in CI the teacher is stubbed/offline, prose shows the real teacher call. Build the narrow 'auto-research' loop (search -> read -> synthesize a short grounded answer). Be brutally honest about the ceiling. Optional RLVR on tool-use success. Cross-link the agents part, ReAct, and RAG chapters. Reasoning-heavy."
         },
         {
           "file": "11-evaluation-and-serving",
-          "title": "Evaluation & Serving: Honest Benchmarks, int4 Quantization, and Running on a Laptop",
+          "title": "評測與服務：誠實的基準、INT4 量化，以及在筆記型電腦上運行",
           "words": 5500,
           "model": "sonnet",
           "scope": "FIRST read capstone/PLAN.md IN FULL — it is the canonical spec for the whole Capstone (the exact Stack-100M config, data mix, ~20B-token over-training budget, compute tiers, and every SOTA component with its citation); stay strictly consistent with it and cross-link the deeper book chapter this builds on. Evaluate Stack-100M honestly and ship it. Eval: held-out perplexity, a few lightweight probes (arithmetic accuracy, a tiny multiple-choice set, retrieval-QA exact-match), and an honest capability report (a 100M model is a narrow tool, not an oracle); warn on contamination; cross-link the evaluation part. Serve: int8 then int4 post-training quantization (round-to-nearest baseline; explain GPTQ/AWQ, Frantar/Lin), export, and run on CPU/laptop with measured latency and memory. Runnable quantize + CPU-generate code. The payoff: your own model generating text locally. Cross-link quantization, inference, KV-cache chapters and tools."
         },
         {
           "file": "12-retrospective-and-scaleup",
-          "title": "Retrospective: Cost Accounting, Reproducibility, and the Path to 1B",
+          "title": "回顧：成本核算、可重現性，以及通往十億參數的路",
           "words": 5000,
           "model": "opus",
           "scope": "FIRST read capstone/PLAN.md IN FULL — it is the canonical spec for the whole Capstone (the exact Stack-100M config, data mix, ~20B-token over-training budget, compute tiers, and every SOTA component with its citation); stay strictly consistent with it and cross-link the deeper book chapter this builds on. Close the capstone. A full cost-accounting table (GPU-hours x price per stage: tokenizer, ladder, pretrain, mid-train, SFT/DPO/GRPO, agent distill, eval) totaling the ~$100. A reproducibility checklist (seeds, config hashes, data manifest, env pinning, checkpoint hygiene). What breaks and what to change to scale to 1B (data volume/quality, DP->FSDP->pipeline parallelism, LR/batch scaling, MoE option citing DeepSeekMoE/Qwen3-MoE). A curated further-reading list of the real works cited across Part XIV. Land the plane: the reader has built the entire stack once, small and real, end to end."
@@ -1083,46 +1083,46 @@
     },
     {
       "dir": "15-production-stack",
-      "title": "Part XV — The Production Stack: Stack-100M With the Real Toolchain",
+      "title": "第 XV 部 — 生產技術棧：用真實工具鏈做出 Stack-100M",
       "chapters": [
         {
           "file": "01-toolchain-map",
-          "title": "The Production Toolchain: A Map From Scratch to Shipping",
+          "title": "生產工具鏈：從零到上線的地圖",
           "words": 5000,
           "model": "opus",
           "scope": "FIRST read prodstack/PLAN.md IN FULL (canonical spec for Part XV) and capstone/PLAN.md (the Stack-100M target). For EVERY stage: name the real 2026-standard OSS library and why, show actual runnable code/commands to do the stage with it, and CROSS-LINK the Part-XIV capstone chapter where we built that piece by hand ('we hand-rolled this in Ch 14.x; here's the library'). Be honest about version drift (pin versions, note flags move, point at the upstream example). Never fabricate APIs/numbers/dates. The whole-stack from-scratch-vs-production map. A wiring diagram of the end-to-end pipeline (data->tokenizer->pretrain->post-train->serve->eval), the 'hand-roll to learn, reach for the library to ship' thesis, and a crosswalk table (stage -> our stacklm module -> the production library -> the Part-XIV chapter). Orient the whole part."
         },
         {
           "file": "02-data-datatrove",
-          "title": "Data at Scale: datatrove and Hugging Face datasets",
+          "title": "規模化數據：datatrove 與 Hugging Face datasets",
           "words": 6000,
           "model": "sonnet",
           "scope": "FIRST read prodstack/PLAN.md IN FULL (canonical spec for Part XV) and capstone/PLAN.md (the Stack-100M target). For EVERY stage: name the real 2026-standard OSS library and why, show actual runnable code/commands to do the stage with it, and CROSS-LINK the Part-XIV capstone chapter where we built that piece by hand ('we hand-rolled this in Ch 14.x; here's the library'). Be honest about version drift (pin versions, note flags move, point at the upstream example). Never fabricate APIs/numbers/dates. Build the FineWeb-style data pipeline with datatrove (WarcReader/URL+quality+language filters/MinHash dedup/DocumentTokenizer/writer; LocalPipelineExecutor -> SlurmPipelineExecutor) and HF datasets streaming; nemo-curator and dolma as alternatives. Produce the same packed shards stacklm consumes. Mirror Ch 14.2 / 3.1 / 3.2."
         },
         {
           "file": "03-tokenizer-hf",
-          "title": "Tokenizer Training: Hugging Face tokenizers and SentencePiece",
+          "title": "訓練分詞器：Hugging Face tokenizers 與 SentencePiece",
           "words": 5000,
           "model": "sonnet",
           "scope": "FIRST read prodstack/PLAN.md IN FULL (canonical spec for Part XV) and capstone/PLAN.md (the Stack-100M target). For EVERY stage: name the real 2026-standard OSS library and why, show actual runnable code/commands to do the stage with it, and CROSS-LINK the Part-XIV capstone chapter where we built that piece by hand ('we hand-rolled this in Ch 14.x; here's the library'). Be honest about version drift (pin versions, note flags move, point at the upstream example). Never fabricate APIs/numbers/dates. Train a real byte-level BPE with the HF tokenizers Rust trainer (BpeTrainer + ByteLevel, train_from_iterator, save tokenizer.json), wrap in PreTrainedTokenizerFast with reserved chat/tool special tokens, export; the sentencepiece path and when to use it. Mirror Ch 14.3 / 2.1; tie to the Tokenizer Playground tool."
         },
         {
           "file": "04-pretrain-torchtitan",
-          "title": "Pretraining With a Real Trainer: torchtitan and nanotron",
+          "title": "用真實訓練器做預訓練：torchtitan 與 nanotron",
           "words": 6500,
           "model": "opus",
           "scope": "FIRST read prodstack/PLAN.md IN FULL (canonical spec for Part XV) and capstone/PLAN.md (the Stack-100M target). For EVERY stage: name the real 2026-standard OSS library and why, show actual runnable code/commands to do the stage with it, and CROSS-LINK the Part-XIV capstone chapter where we built that piece by hand ('we hand-rolled this in Ch 14.x; here's the library'). Be honest about version drift (pin versions, note flags move, point at the upstream example). Never fabricate APIs/numbers/dates. Configure and launch a real distributed pretraining run with torchtitan (PyTorch-native, FSDP2/TP, activation checkpointing, WSD schedule, checkpointing, MFU logging) mapping every knob onto Ch 14.7's hand-written loop; nanotron and Megatron-LM/DeepSpeed as alternatives, accelerate for the small path. Cross-link Ch 3.5-3.8, 14.6, 14.7."
         },
         {
           "file": "05-posttrain-trl",
-          "title": "Post-Training With TRL and the alignment-handbook",
+          "title": "用 TRL 與 alignment-handbook 做後訓練",
           "words": 6500,
           "model": "opus",
           "scope": "FIRST read prodstack/PLAN.md IN FULL (canonical spec for Part XV) and capstone/PLAN.md (the Stack-100M target). For EVERY stage: name the real 2026-standard OSS library and why, show actual runnable code/commands to do the stage with it, and CROSS-LINK the Part-XIV capstone chapter where we built that piece by hand ('we hand-rolled this in Ch 14.x; here's the library'). Be honest about version drift (pin versions, note flags move, point at the upstream example). Never fabricate APIs/numbers/dates. SFT (SFTTrainer, chat template, assistant_only_loss, packing), DPO (DPOTrainer), GRPO (GRPOTrainer + vLLM rollouts) with real configs mapped onto Ch 14.9's from-scratch SFT/DPO/GRPO; the alignment-handbook recipes; veRL/OpenRLHF for scale; peft/unsloth for adapters; lm-evaluation-harness gating. Cross-link Ch 5.x, 6.x, 14.9."
         },
         {
           "file": "06-serve-eval-vllm",
-          "title": "Serving, Quantizing and Evaluating: vLLM, lm-eval-harness, llama.cpp",
+          "title": "服務、量化與評測：vLLM、lm-eval-harness、llama.cpp",
           "words": 6000,
           "model": "sonnet",
           "scope": "FIRST read prodstack/PLAN.md IN FULL (canonical spec for Part XV) and capstone/PLAN.md (the Stack-100M target). For EVERY stage: name the real 2026-standard OSS library and why, show actual runnable code/commands to do the stage with it, and CROSS-LINK the Part-XIV capstone chapter where we built that piece by hand ('we hand-rolled this in Ch 14.x; here's the library'). Be honest about version drift (pin versions, note flags move, point at the upstream example). Never fabricate APIs/numbers/dates. Serve with vllm serve (OpenAI-compatible API, continuous batching, metrics), quantize with GPTQ/AWQ (llm-compressor/AutoAWQ) and to GGUF for llama.cpp CPU/laptop serving, run honest eval with lm-evaluation-harness. Map onto Ch 14.11 (int4+laptop) and Ch 7.x. End the part: the same Stack-100M, shipped with the real toolchain."
@@ -1131,39 +1131,39 @@
     },
     {
       "dir": "99-appendix",
-      "title": "Appendix",
+      "title": "附錄",
       "chapters": [
         {
           "file": "01-glossary",
-          "title": "Glossary of Terms",
+          "title": "術語表",
           "scope": "A comprehensive A-Z glossary of the entire stack's terminology, each with a one-to-three sentence definition and cross-links to the chapter that covers it. 200+ entries.",
           "words": 6000,
           "model": "sonnet"
         },
         {
           "file": "02-math-reference",
-          "title": "The Math Reference Sheet",
+          "title": "數學速查表",
           "scope": "All the key equations in one place: softmax, cross-entropy, attention, RoPE, LayerNorm/RMSNorm, AdamW, PPO/GRPO/DPO losses, KL estimators, scaling laws, LoRA — with one-line reminders of meaning. A printable cheat sheet.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "03-papers-reading-list",
-          "title": "Key Papers: An Annotated Reading List",
+          "title": "關鍵論文：帶註解的閱讀清單",
           "scope": "The canonical papers organized by topic (architecture, training, alignment, RL, inference, agents), each with a 2-3 sentence 'what it introduced and why it matters'. A curated curriculum.",
           "words": 6000,
           "model": "sonnet"
         },
         {
           "file": "04-tooling-setup",
-          "title": "Tooling & Environment Setup Cheatsheet",
+          "title": "工具與環境設定速查",
           "scope": "The practitioner's toolbox: PyTorch, transformers, datasets, accelerate, deepspeed, vLLM, SGLang, TRL/veRL, flash-attn, bitsandbytes, wandb; environment/CUDA setup, common gotchas, useful commands. Hands-on reference.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "05-from-scratch-index",
-          "title": "From-Scratch Code Index",
+          "title": "從零實作程式碼索引",
           "scope": "A master index of every from-scratch implementation in the book (autograd, BPE, attention, RoPE, GPT, LoRA, DPO, GRPO, flash-attn pseudocode, speculative decoding, RAG, samplers), with pointers and a note on how they fit together.",
           "words": 4500,
           "model": "sonnet"

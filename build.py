@@ -17,6 +17,18 @@ from html.parser import HTMLParser
 
 import markdown
 from pygments.formatters import HtmlFormatter
+import builtins
+
+_builtin_open = builtins.open
+
+
+def open(file, mode="r", *args, **kwargs):
+    # Traditional Chinese source must round-trip on Windows, whose default
+    # encoding is not UTF-8.
+    if "b" not in mode and "encoding" not in kwargs:
+        kwargs["encoding"] = "utf-8"
+    return _builtin_open(file, mode, *args, **kwargs)
+
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 CONTENT = os.path.join(ROOT, "content")
@@ -26,11 +38,41 @@ FIGURES = os.path.join(ROOT, "figures")
 
 # Public deployment base (GitHub Pages project site). Used for canonical URLs,
 # Open Graph/Twitter cards, and sitemap.xml — all of which need absolute URLs.
-SITE_BASE = "https://prakashkagitha.github.io/llm-stack-book/"
+SITE_BASE = "https://nicholashui.github.io/llm-stack-book/"
 OG_IMAGE = SITE_BASE + "assets/og-image.png"
-REPO_URL = "https://github.com/prakashkagitha/llm-stack-book"
+REPO_URL = "https://github.com/nicholashui/llm-stack-book"
+UPSTREAM_BOOK = "https://prakashkagitha.github.io/llm-stack-book/"
+UPSTREAM_REPO = "https://github.com/prakashkagitha/llm-stack-book"
 BUILD_DATE = datetime.date.today().isoformat()
 YEAR = datetime.date.today().year
+
+_CJK_RE = re.compile(r"[\u4e00-\u9fff]")
+
+
+def count_words(text):
+    """Count English words plus CJK characters. Chinese has no spaces between words."""
+    cjk = len(_CJK_RE.findall(text))
+    english = len(_CJK_RE.sub(" ", text).split())
+    return cjk + english
+
+
+def reading_minutes(text):
+    cjk = len(_CJK_RE.findall(text))
+    english = len(_CJK_RE.sub(" ", text).split())
+    return max(1, round(cjk / 400 + english / 220))
+
+
+def apply_catalog_title(body, title):
+    """Show the catalog title as the h1. Keep a different markdown h1 as the original-language subtitle."""
+    match = re.search(r"<h1([^>]*)>(.*?)</h1>", body, re.S)
+    if not match:
+        return body
+    original = strip_html(match.group(2)).replace("\u00b6", "").strip()
+    if original == title:
+        return body
+    heading = (f"<h1{match.group(1)}>{html.escape(title)}</h1>\n"
+               f"<p class=\"orig-title\">{html.escape(original)}</p>")
+    return body[:match.start()] + heading + body[match.end():]
 
 # chapter-id -> {path, hw, title} for the GPU-tier notebooks (1xH100 / 2xA100), if present.
 try:
@@ -271,12 +313,12 @@ def render_toc_side(toc_tokens):
     walk(toc_tokens)
     if not items:
         return ""
-    return ('<aside class="toc-side"><div class="toc-title">On this page</div>'
+    return ('<aside class="toc-side"><div class="toc-title">本頁目錄</div>'
             '<ul>' + "\n".join(items) + "</ul></aside>")
 
 
 PAGE_TMPL = """<!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="zh-Hant" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -299,22 +341,22 @@ PAGE_TMPL = """<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="{base}assets/style.css">
 <link rel="stylesheet" href="{base}assets/pygments.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600&display=swap" media="print" onload="this.media='all'">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600&display=swap"></noscript>
 </head>
 <body>
 <div class="progress-bar"></div>
 <header class="topbar">
-  <button class="icon-btn menu-toggle" id="menu-toggle" aria-label="Menu">☰</button>
+  <button class="icon-btn menu-toggle" id="menu-toggle" aria-label="選單">☰</button>
   <a class="brand" href="{home}"><span class="logo">Λ</span><span class="brand-text">{brand}<small>{brand_sub}</small></span></a>
   <div class="spacer"></div>
   <div class="search-box">
     <span class="si">⌕</span>
-    <input id="search-input" type="text" placeholder="Search… ( / )" autocomplete="off" spellcheck="false" data-base="{base}" data-index="{search_name}">
+    <input id="search-input" type="text" placeholder="搜尋…（/）" autocomplete="off" spellcheck="false" data-base="{base}" data-index="{search_name}">
     <div class="search-results" id="search-results"></div>
   </div>
-  <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme">☾</button>
+  <button class="icon-btn" id="theme-toggle" aria-label="切換深淺色">☾</button>
 </header>
 <div class="scrim"></div>
 <div class="layout">
@@ -328,7 +370,7 @@ PAGE_TMPL = """<!DOCTYPE html>
 </article>
 <footer class="site-footer">
   <span>{brand} · {brand_sub}</span>
-  <span class="footer-links"><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · <a href="{repo_url}">Source &amp; errata</a></span>
+  <span class="footer-links"><a href="https://creativecommons.org/licenses/by/4.0/deed.zh_TW">CC BY 4.0</a> · <a href="https://prakashkagitha.github.io/llm-stack-book/">英文原書</a> · <a href="{repo_url}">原始碼</a></span>
 </footer>
 </main>
 {toc_side}
@@ -362,43 +404,44 @@ def build_collection(coll):
         else:
             num = "" if c["is_front"] else f'{c["part_no"]}.{c["chap_no"]} '
             raw = (f"# {num}{c['title']}\n\n"
-                   f"!!! note \"Draft in progress\"\n    This chapter is being written.\n\n"
-                   f"**Scope.** {c['scope']}\n")
+                   f"!!! note \"草稿撰寫中\"\n    本章仍在撰寫。\n\n"
+                   f"**範圍。** {c['scope']}\n")
             placeholders += 1
 
         raw = expand_figures(raw)
         raw = expand_tools(raw)
         body = md.convert(raw)
+        body = apply_catalog_title(body, c["title"])
         body = coll.rewrite_links(body)
         toc_tokens = getattr(md, "toc_tokens", [])
         text = strip_html(body)
-        words = len(text.split())
+        words = count_words(text)
         total_words += words
 
         base = coll.asset_base(c["url"])
         home = base + (f"{coll.out_subdir}/index.html" if coll.out_subdir else "index.html")
         num = "" if c["is_front"] else f'{c["part_no"]}.{c["chap_no"]} · '
         crumb = (f'<div class="chapter-eyebrow">{html.escape(c["part_title"])}</div>')
-        reading = max(1, round(words / 220))     # ~220 wpm technical reading
         updated = git_last_date(c["md_path"])
         nb_rel = f'{c["part_dir"]}/{c["file"]}.ipynb'
         colab = ""
         if os.path.exists(os.path.join(ROOT, "notebooks", nb_rel)):
             colab = ('<span class="cm-dot">·</span>'
                      f'<a class="cm-colab" target="_blank" rel="noopener" '
-                     f'href="https://colab.research.google.com/github/prakashkagitha/llm-stack-book/blob/main/notebooks/{nb_rel}">'
-                     '&#9654; Run the code (Colab)</a>')
+                     f'href="https://colab.research.google.com/github/nicholashui/llm-stack-book/blob/main/notebooks/{nb_rel}">'
+                     '&#9654; 在 Colab 執行程式</a>')
         # Optional GPU-tier notebook (1xH100 / 2xA100) for compute-heavy chapters.
         gpu = ""
         gnb = GPU_NOTEBOOKS.get(f'{c["part_dir"]}/{c["file"]}')
         if gnb:
             gpu = ('<span class="cm-dot">·</span>'
                    f'<a class="cm-colab" target="_blank" rel="noopener" '
-                   f'href="https://colab.research.google.com/github/prakashkagitha/llm-stack-book/blob/main/notebooks-gpu/{gnb["path"]}">'
-                   f'&#9889; Run on GPU ({html.escape(gnb["hw"])})</a>')
-        chapter_meta = (f'<div class="chapter-meta"><span>{reading} min read</span>'
+                   f'href="https://colab.research.google.com/github/nicholashui/llm-stack-book/blob/main/notebooks-gpu/{gnb["path"]}">'
+                   f'&#9889; 在 GPU 上執行（{html.escape(gnb["hw"])}）</a>')
+        reading = reading_minutes(text)
+        chapter_meta = (f'<div class="chapter-meta"><span>{reading} 分鐘閱讀</span>'
                         f'<span class="cm-dot">·</span>'
-                        f'<span>Updated <time datetime="{updated}">{updated}</time></span>'
+                        f'<span>更新於 <time datetime="{updated}">{updated}</time></span>'
                         f'{colab}{gpu}</div>')
         canonical = SITE_BASE + (f'{coll.out_subdir}/' if coll.out_subdir else "") + c["url"]
 
@@ -407,13 +450,13 @@ def build_collection(coll):
         pn = ['<nav class="page-nav">']
         if prev_c:
             pn.append(f'<a class="prev" href="{rel(c["url"], prev_c["url"])}">'
-                      f'<span class="pn-label">← Previous</span>'
+                      f'<span class="pn-label">← 上一章</span>'
                       f'<span class="pn-title">{html.escape(prev_c["title"])}</span></a>')
         else:
             pn.append("<span></span>")
         if next_c:
             pn.append(f'<a class="next" href="{rel(c["url"], next_c["url"])}">'
-                      f'<span class="pn-label">Next →</span>'
+                      f'<span class="pn-label">下一章 →</span>'
                       f'<span class="pn-title">{html.escape(next_c["title"])}</span></a>')
         pn.append("</nav>")
 
@@ -445,7 +488,7 @@ def build_collection(coll):
 
 
 INDEX_TMPL = """<!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="zh-Hant" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -467,21 +510,21 @@ INDEX_TMPL = """<!DOCTYPE html>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="{base}assets/style.css">
 <link rel="stylesheet" href="{base}assets/pygments.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"></noscript>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600&display=swap"></noscript>
 </head>
 <body>
 <div class="progress-bar"></div>
 <header class="topbar">
-  <button class="icon-btn menu-toggle" id="menu-toggle" aria-label="Menu">☰</button>
+  <button class="icon-btn menu-toggle" id="menu-toggle" aria-label="選單">☰</button>
   <a class="brand" href="{home}"><span class="logo">Λ</span><span class="brand-text">{title}<small>{subtitle}</small></span></a>
   <div class="spacer"></div>
   <div class="search-box">
     <span class="si">⌕</span>
-    <input id="search-input" type="text" placeholder="Search… ( / )" autocomplete="off" spellcheck="false" data-base="{base}" data-index="{search_name}">
+    <input id="search-input" type="text" placeholder="搜尋…（/）" autocomplete="off" spellcheck="false" data-base="{base}" data-index="{search_name}">
     <div class="search-results" id="search-results"></div>
   </div>
-  <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme">☾</button>
+  <button class="icon-btn" id="theme-toggle" aria-label="切換深淺色">☾</button>
 </header>
 <div class="scrim"></div>
 <div class="layout">
@@ -493,10 +536,10 @@ INDEX_TMPL = """<!DOCTYPE html>
   <h1 class="hero-title">{title}<span class="hero-sub">{subtitle}</span></h1>
   <p class="hero-tagline">{tagline}</p>
   <div class="stats">
-    <div class="stat"><div class="num">{nparts}</div><div class="lbl">Parts</div></div>
-    <div class="stat"><div class="num">{nchapters}</div><div class="lbl">Chapters</div></div>
-    <div class="stat"><div class="num">~{pages}</div><div class="lbl">Pages</div></div>
-    <div class="stat"><div class="num">{kwords}k</div><div class="lbl">Words</div></div>
+    <div class="stat"><div class="num">{nparts}</div><div class="lbl">部</div></div>
+    <div class="stat"><div class="num">{nchapters}</div><div class="lbl">章</div></div>
+    <div class="stat"><div class="num">~{pages}</div><div class="lbl">頁</div></div>
+    <div class="stat"><div class="num">{kwords}k</div><div class="lbl">字</div></div>
   </div>
   {cta}
 </section>
@@ -507,7 +550,7 @@ INDEX_TMPL = """<!DOCTYPE html>
 </article>
 <footer class="site-footer">
   <span>{title} · {subtitle}</span>
-  <span class="footer-links"><a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> · <a href="{repo_url}">Source &amp; errata</a></span>
+  <span class="footer-links"><a href="https://creativecommons.org/licenses/by/4.0/deed.zh_TW">CC BY 4.0</a> · <a href="https://prakashkagitha.github.io/llm-stack-book/">英文原書</a> · <a href="{repo_url}">原始碼</a></span>
 </footer>
 </main>
 </div>
@@ -541,16 +584,16 @@ def write_index(coll, total_words, nch):
     cta = ""
     if coll.parent:
         cta = (f'<p class="hero-cta"><a class="btn-ghost" href="{html.escape(coll.parent["href"])}">'
-               f'← Back to {html.escape(coll.parent["title"])}</a></p>')
+               f'← 返回{html.escape(coll.parent["title"])}</a></p>')
     elif coll.out_subdir == "":
         # main book: link to interview companion + first chapter
         first = coll.flat_chapters[0]["url"] if coll.flat_chapters else "#"
-        cta = (f'<p class="hero-cta"><a class="btn-primary" href="{first}">Start reading →</a>'
-               f'<a class="btn-ghost" href="map/index.html">Learning map</a>'
-               f'<a class="btn-ghost" href="glossary/index.html">Glossary</a>'
-               f'<a class="btn-ghost" href="tools/index.html">Tools &amp; calculators</a>'
-               f'<a class="btn-ghost" href="interview/index.html">Interview companion</a>'
-               f'<a class="btn-ghost" href="print.html">Print / PDF edition</a></p>')
+        cta = (f'<p class="hero-cta"><a class="btn-primary" href="{first}">開始閱讀 →</a>'
+               f'<a class="btn-ghost" href="map/index.html">學習地圖</a>'
+               f'<a class="btn-ghost" href="glossary/index.html">術語表</a>'
+               f'<a class="btn-ghost" href="tools/index.html">工具與計算機</a>'
+               f'<a class="btn-ghost" href="interview/index.html">面試配套</a>'
+               f'<a class="btn-ghost" href="print.html">列印／PDF 版</a></p>')
 
     canonical = SITE_BASE + (f'{coll.out_subdir}/' if coll.out_subdir else "")
     cite = ""
@@ -559,16 +602,24 @@ def write_index(coll, total_words, nch):
                "  title  = {The LLM Stack: From Silicon to Agents},\n"
                "  author = {Kagitha, Prakash},\n"
                "  year   = {" + str(YEAR) + "},\n"
-               "  url    = {" + SITE_BASE + "},\n"
-               "  note   = {Open web textbook, CC BY 4.0}\n}")
-        cite = ('<section class="cite-book"><h2>Cite this book</h2>'
+               "  url    = {" + UPSTREAM_BOOK + "},\n"
+               "  note   = {Open web textbook, CC BY 4.0. Traditional Chinese translation: "
+               + SITE_BASE + "}\n}")
+        cite = ('<section class="cite-book"><h2>關於這個譯本</h2>'
+                '<p>這是 <a href="' + UPSTREAM_BOOK + '">The LLM Stack: From Silicon to Agents</a> '
+                '的繁體中文譯本。原著 Prakash Kagitha（2026），依 '
+                '<a href="https://creativecommons.org/licenses/by/4.0/deed.zh_TW">CC BY 4.0</a> '
+                '授權翻譯。程式碼、公式、論文題名與產品名稱保留英文。'
+                '目錄、網站介面與前言已譯成繁體中文。其餘章節會逐章譯出；'
+                '尚未譯完的章節，頁首是中文標題，內文仍是英文原文。</p>'
+                '<h2>引用原書</h2>'
                 '<pre class="cite-bibtex"><code>' + html.escape(bib) + '</code></pre></section>')
 
     html_out = INDEX_TMPL.format(
         title=html.escape(coll.m["title"]),
         subtitle=html.escape(coll.m.get("subtitle", "")),
         tagline=html.escape(coll.m.get("tagline", "")),
-        eyebrow="Interview Companion" if coll.parent else "An open, ground-up field guide",
+        eyebrow="面試配套" if coll.parent else "開放的實務指南 · 繁體中文譯本",
         nparts=coll.n_parts, nchapters=nch,
         pages=f"{total_words // 300:,}", kwords=f"{total_words // 1000}",
         base=base, home=home, search_name=coll.search_name,
@@ -605,17 +656,17 @@ def write_tools_hub(book):
         link = ""
         if name in used_in:
             url, ctitle = used_in[name]
-            link = f'<a class="tool-chapter-link" href="../{url}">↳ in “{html.escape(ctitle)}”</a>'
+            link = f'<a class="tool-chapter-link" href="../{url}">↳ 見於「{html.escape(ctitle)}」</a>'
         blocks.append(f'<section class="tool-hub-item"><div class="tool-hub-head">'
                       f'<h2 id="{name}">{html.escape(title)}</h2>{link}</div>\n{src}\n</section>')
-    body = ('<div class="chapter-eyebrow">Interactive tools</div>'
-            '<h1>Tools &amp; calculators</h1>'
-            '<p class="tool-hub-intro">Live calculators and visualizers from across the book — '
-            'FLOP/memory/cost budgets, the Chinchilla-optimal split, KV-cache sizing, and more. '
-            'Each also appears inline in the chapter that teaches it.</p>\n' + "\n".join(blocks))
+    body = ('<div class="chapter-eyebrow">互動工具</div>'
+            '<h1>工具與計算機</h1>'
+            '<p class="tool-hub-intro">散落在全書裡的即時計數器與視覺化：'
+            'FLOP、記憶體與成本預算、Chinchilla 最佳分配、KV 快取大小，以及其他。'
+            '每一個也出現在教導它的那一章裡。</p>\n' + "\n".join(blocks))
     page = PAGE_TMPL.format(
-        title="Tools &amp; calculators", brand=html.escape(book.m["title"]),
-        brand_sub=html.escape(book.m.get("subtitle", "")), desc="Interactive LLM calculators and visualizers.",
+        title="工具與計算機", brand=html.escape(book.m["title"]),
+        brand_sub=html.escape(book.m.get("subtitle", "")), desc="LLM 的互動計算機與視覺化。",
         base="../", home="../index.html", search_name="search-index.json",
         canonical=SITE_BASE + "tools/", og_image=OG_IMAGE, repo_url=REPO_URL,
         sidebar=render_sidebar(book, "tools/index.html"),
@@ -639,8 +690,9 @@ def _load_concept(name):
 
 
 def _diff_badge(d):
+    label = {"intro": "入門", "core": "核心", "advanced": "進階"}.get(d, d)
     cls = {"intro": "good", "core": "accent", "advanced": "warn"}.get(d, "accent")
-    return f'<span class="lm-diff lm-{cls}">{html.escape(d)}</span>'
+    return f'<span class="lm-diff lm-{cls}">{html.escape(label)}</span>'
 
 
 def write_learning_map(book):
@@ -680,14 +732,14 @@ def write_learning_map(book):
 .lm-tagbar a{margin:.15rem .3rem .15rem 0}
 </style>
 """
-    parts = ['<div class="chapter-eyebrow">Navigate the book</div><h1>Learning map</h1>',
-             '<p class="lm-intro">Guided reading tracks for specific goals, a topic index, and the '
-             'prerequisite map for every chapter — so you can chart a path instead of reading front to back.</p>',
+    parts = ['<div class="chapter-eyebrow">在書裡找路</div><h1>學習地圖</h1>',
+             '<p class="lm-intro">依目標排好的閱讀路線、主題索引，以及每一章的先備概念，'
+             '用來決定先讀哪裡。</p>',
              css, '<div id="lm">']
 
     # --- reading tracks ---
     if tracks:
-        parts.append('<h2>Guided reading tracks</h2>')
+        parts.append('<h2>閱讀路線</h2>')
         for t in tracks:
             items = []
             for cid in t.get("chapters", []):
@@ -703,7 +755,7 @@ def write_learning_map(book):
 
     # --- browse by topic ---
     if tags:
-        parts.append('<h2>Browse by topic</h2><div class="lm-tagbar">')
+        parts.append('<h2>依主題瀏覽</h2><div class="lm-tagbar">')
         for tag in sorted(tags):
             chs = tags[tag]
             links = " ".join(chip(c["url"], (c["num"] + " " if c["num"] else "") + c["title"]) for c in chs)
@@ -712,9 +764,9 @@ def write_learning_map(book):
         parts.append('</div>')
 
     # --- prerequisite map, grouped by part ---
-    parts.append('<h2>Prerequisite map</h2>'
-                 '<p class="lm-ol">Each chapter with what it lets you do and the concepts to know first '
-                 '(linked to where they are taught).</p>')
+    parts.append('<h2>先備概念</h2>'
+                 '<p class="lm-ol">每一章讀完能做什麼，以及要先知道哪些概念'
+                 '（連到教這些概念的章節）。</p>')
     cur_part = None
     for g in graph:
         if g["part"] != cur_part:
@@ -729,14 +781,14 @@ def write_learning_map(book):
             f'{html.escape((g["num"]+" ") if g["num"] else "")}{html.escape(g["title"])}</a>'
             f'{_diff_badge(g["difficulty"])}</div>'
             f'<div class="lm-ol">{html.escape(g["one_liner"])}</div>'
-            + (f'<div class="lm-pre">Prereqs: {pre}</div>' if pre else "") + '</div>')
+            + (f'<div class="lm-pre">先備：{pre}</div>' if pre else "") + '</div>')
     parts.append('</div>')
 
     body = "\n".join(parts)
     page = PAGE_TMPL.format(
-        title="Learning map", brand=html.escape(book.m["title"]),
+        title="學習地圖", brand=html.escape(book.m["title"]),
         brand_sub=html.escape(book.m.get("subtitle", "")),
-        desc="Guided reading tracks, topic index, and the prerequisite map for the whole book.",
+        desc="全書的閱讀路線、主題索引與先備概念。",
         base="../", home="../index.html", search_name="search-index.json",
         canonical=SITE_BASE + "map/", og_image=OG_IMAGE, repo_url=REPO_URL,
         sidebar=render_sidebar(book, "map/index.html"),
@@ -778,11 +830,10 @@ def write_glossary(book):
 .gl-none{color:var(--muted,#889);padding:1rem 0;display:none}
 </style>
 """
-    parts = ['<div class="chapter-eyebrow">Reference</div><h1>Glossary</h1>',
-             f'<p class="gl-intro">{len(gloss):,} terms from across the book, each linked to the chapter that '
-             'defines it. Type to filter.</p>', css,
-             '<input id="gl-filter" type="search" placeholder="Filter terms… (e.g. KV cache, LoRA, MFU)" '
-             'aria-label="Filter glossary terms" autocomplete="off">',
+    parts = ['<div class="chapter-eyebrow">參考</div><h1>術語表</h1>',
+             f'<p class="gl-intro">全書 {len(gloss):,} 條術語，每條連到定義它的章節。輸入即可篩選。</p>', css,
+             '<input id="gl-filter" type="search" placeholder="篩選術語…（例如 KV cache、LoRA、MFU）" '
+             'aria-label="篩選術語" autocomplete="off">',
              '<div id="gl">']
     az = " ".join(f'<a href="#gl-{l}">{l}</a>' for l in letters)
     parts.append(f'<div class="gl-az">{az}</div>')
@@ -791,12 +842,12 @@ def write_glossary(book):
         for g in sorted(groups[l], key=lambda x: x["key"]):
             src = (f'<a href="../{g["home_url"]}">{html.escape((g["home_num"]+" ") if g["home_num"] else "")}'
                    f'{html.escape(g["home_title"])}</a>')
-            extra = f' · used in {g["used_count"]} chapters' if g["used_count"] > 1 else ""
+            extra = f' · 另見於 {g["used_count"]} 章' if g["used_count"] > 1 else ""
             parts.append(
                 f'<div class="gl-item"><div class="gl-term">{html.escape(g["term"])}</div>'
                 f'<div class="gl-def">{html.escape(g["definition"])}</div>'
-                f'<div class="gl-src">Defined in {src}{extra}</div></div>')
-    parts.append('<div class="gl-none">No terms match your filter.</div></div>')
+                f'<div class="gl-src">定義於 {src}{extra}</div></div>')
+    parts.append('<div class="gl-none">沒有符合的術語。</div></div>')
     parts.append("""
 <script>
 (function(){
@@ -822,9 +873,9 @@ def write_glossary(book):
 """)
     body = "\n".join(parts)
     page = PAGE_TMPL.format(
-        title="Glossary", brand=html.escape(book.m["title"]),
+        title="術語表", brand=html.escape(book.m["title"]),
         brand_sub=html.escape(book.m.get("subtitle", "")),
-        desc="A filterable glossary of LLM-stack terms, each linked to the chapter that defines it.",
+        desc="可篩選的 LLM 技術棧術語表，每條連到定義它的章節。",
         base="../", home="../index.html", search_name="search-index.json",
         canonical=SITE_BASE + "glossary/", og_image=OG_IMAGE, repo_url=REPO_URL,
         sidebar=render_sidebar(book, "glossary/index.html"),
@@ -863,6 +914,7 @@ def write_print_edition(book):
         raw = expand_figures(raw)
         raw = expand_tools(raw)
         body = md.convert(raw)
+        body = apply_catalog_title(body, c["title"])
         # interview-companion links: not part of the printed book -> point at the live site.
         body = re.sub(r'href="(?:\.\./)*interview/([0-9A-Za-z-]+)\.html((?:#[^"]*)?)"',
                       lambda m: f'href="{SITE_BASE}interview/{m.group(1)}.html{m.group(2)}"', body)
@@ -883,17 +935,17 @@ def write_print_edition(book):
 
     m = book.m
     cover = (f'<div class="pe-cover" id="pe-top">'
-             f'<div class="pe-cover-eyebrow">The complete book &middot; print / PDF edition</div>'
+             f'<div class="pe-cover-eyebrow">全書 · 列印／PDF 版</div>'
              f'<h1 class="pe-cover-title">{html.escape(m["title"])}</h1>'
              f'<div class="pe-cover-sub">{html.escape(m.get("subtitle",""))}</div>'
              f'<p class="pe-cover-tag">{html.escape(m.get("tagline",""))}</p>'
-             f'<div class="pe-cover-meta">{len(sections)} chapters &middot; generated {BUILD_DATE} &middot; '
-             f'<a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a><br>'
-             f'{html.escape(SITE_BASE)}</div>'
-             f'<p class="pe-cover-hint">Tip: use your browser&rsquo;s <b>Print &rarr; Save as PDF</b> '
-             f'(A4/Letter, background graphics on). Interactive widgets print their initial state.</p>'
+             f'<div class="pe-cover-meta">{len(sections)} 章 &middot; 產生於 {BUILD_DATE} &middot; '
+             f'<a href="https://creativecommons.org/licenses/by/4.0/deed.zh_TW">CC BY 4.0</a><br>'
+             f'原著 Prakash Kagitha · {html.escape(UPSTREAM_BOOK)}</div>'
+             f'<p class="pe-cover-hint">用瀏覽器的<b>列印 → 另存 PDF</b>'
+             f'（A4 或 Letter，開啟背景圖形）。互動元件會印出它的初始狀態。</p>'
              f'</div>')
-    toc_html = f'<nav class="pe-toc"><h2>Contents</h2><ol>{"".join(toc)}</ol></nav>'
+    toc_html = f'<nav class="pe-toc"><h2>目錄</h2><ol>{"".join(toc)}</ol></nav>'
     print_css = """
 :root{color-scheme:light}
 html[data-theme]{}
@@ -929,11 +981,11 @@ a{color:#a03d1f}
 }
 """
     doc = f"""<!doctype html>
-<html lang="en" data-theme="light">
+<html lang="zh-Hant" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{html.escape(m["title"])} — Print / PDF edition</title>
+<title>{html.escape(m["title"])} — 列印／PDF 版</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
 <style>{style_css}</style>
 <style>{pyg_css}</style>

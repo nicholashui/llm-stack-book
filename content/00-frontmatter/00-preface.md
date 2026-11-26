@@ -1,89 +1,89 @@
-# Preface: How to Read This Book & The Map of the Stack
+# 前言：如何閱讀本書，以及技術棧全圖
 
-> *"What I cannot create, I do not understand."* — Richard Feynman, on his blackboard at the time of his death.
+> *「凡我不能創造的，我就不能理解。」* — Richard Feynman，寫在他去世時的黑板上。
 
-This book is built on Feynman's principle. You will not truly understand attention until you have written the `softmax(QKᵀ/√d)V` loop with your own hands; you will not understand RLHF until you have computed a clipped policy-gradient loss token by token; you will not understand why an H100 is fast until you have stared at the gap between its 989 teraFLOP/s of compute and its 3.35 TB/s of memory bandwidth and felt the tension. So this is a book of explanations *and* of code — toy implementations, from-scratch reconstructions, and pointers into the real open-source systems that run today's frontier models.
+本書建立在 Feynman 的這條原則上。注意力機制，要親手寫過 `softmax(QKᵀ/√d)V` 那個迴圈，才算真正懂。人類回饋強化學習（RLHF），要逐個詞元算過截斷後的策略梯度損失，才算真正懂。H100 為什麼快，要盯著它每秒 989 兆次浮點運算（989 TFLOP/s）的算力，和每秒 3.35 TB 的記憶體頻寬之間那道缺口，並感覺到其中的張力，才算真正懂。所以這是一本講解的書，也是一本程式的書：有玩具級的實作，有從零重建，也有指向今天真正在跑前沿模型的開源系統。
 
-## Who this book is for
+## 這本書寫給誰
 
-It is for the engineer who wants to hold the **entire** Large Language Model stack in their head at once — not as a list of buzzwords, but as a connected machine. The person who can move from the IEEE-754 bit layout of a `bfloat16` up through a FlashAttention kernel, through a 3D-parallel pretraining run, through a GRPO reinforcement-learning loop, out to a vLLM serving cluster, and finally into the agentic harness that wraps the model in tools — and explain how each layer constrains the ones above and below it.
+寫給想把**整套**大型語言模型（LLM）技術棧同時放在腦子裡的工程師。把它看成一台彼此咬合的機器，而不是一串術語。這個人要能從 `bfloat16` 的 IEEE-754 位元配置講起，走上 FlashAttention 的 kernel，走過三維平行的預訓練，走過 GRPO 強化學習迴圈，走到 vLLM 的推論服務叢集，最後走進把模型包進工具裡的代理駕馭層（agentic harness），並且說清楚每一層如何約束它的上一層和下一層。
 
-If you are preparing for a machine-learning interview — and a free [companion guide](../interview/index.html) is written for exactly that — this breadth-with-depth is precisely what distinguishes a strong candidate from a memorizer.
+如果你在準備機器學習面試，本書有一份免費的[配套指南](../interview/index.html)就是為這件事寫的。這種有深度的廣度，正是把準備充分的候選人，和只會背答案的人分開的地方。
 
-!!! interview "Interview Corner"
-    Throughout the book, callouts like this one flag concepts that come up disproportionately often in ML/LLM interviews, with crisp model answers. When you see the 🎯, treat it as "a sharp interviewer will probe here." The interview track in Part XIII then assembles these into mock questions, a system-design framework, and a day-by-day study plan.
+!!! interview "面試角"
+    全書用這種提示框，標出機器學習與 LLM 面試裡特別常被追問的概念，並給出緊湊的範答。看到 🎯，就把它讀成「嚴謹的面試官會在這裡往下挖。」面試路線會把這些收成模擬題、一套系統設計框架，以及一份按日安排的讀書計劃。
 
-## The map of the stack
+## 技術棧地圖
 
-The single most useful thing you can carry into any LLM discussion is a mental picture of the **layers**, from silicon to agent. Every chapter in this book lives somewhere on this map.
+走進任何一場 LLM 討論，最有用的一件東西，是一張從矽晶到代理的**分層**心智圖。本書每一章都落在這張圖的某處。
 
 
 {{fig:preface-stack-map}}
 
 
-Read the arrows in both directions. The reason decode-phase inference is *memory-bandwidth-bound* (Part VII) is a fact about HBM (Part I). The reason we invented GQA and MLA (Part II) is to shrink the KV cache that bandwidth has to move. The reason FlashAttention (Part IV) exists is that naively materializing the $N \times N$ attention matrix in HBM is the bottleneck. The reason RL infrastructure (Part VI) is uniquely hard is that it must run *inference* (generation) and *training* in the same loop, fighting over the same GPUs. **Nothing in this stack is arbitrary; every design is a response to a physical or statistical constraint.** Learning to see those constraints is the whole game.
+箭頭要兩個方向一起讀。解碼階段的推論**受記憶體頻寬限制**（第 VII 部），這件事的根在高頻寬記憶體 HBM（第 I 部）。我們做出 GQA 和 MLA（第 II 部），是為了縮小頻寬必須搬動的 KV 快取。FlashAttention（第 IV 部）存在，是因為把 $N \times N$ 的注意力矩陣直接物化到 HBM 裡，本身就是瓶頸。強化學習基礎設施（第 VI 部）特別難，是因為它必須在同一個迴圈裡同時跑**推論**（生成）和**訓練**，搶同一批 GPU。**這套技術棧裡沒有任意的設計。每一個設計都是在回應一項物理約束，或一項統計約束。** 學會看見這些約束，就是這整件事的核心。
 
-## A worked taste: the one equation under everything
+## 先算一次：壓在一切底下的那條式子
 
-Before we begin, here is the equation that an LLM spends essentially all of its training compute minimizing — the average negative log-likelihood of the next token:
+開始之前，先看 LLM 幾乎把全部訓練算力拿去最小化的式子，也就是下一個詞元的平均負對數似然：
 
 $$
 \mathcal{L}(\theta) = -\frac{1}{T}\sum_{t=1}^{T} \log p_\theta\!\left(x_t \mid x_{<t}\right)
 $$
 
-That is the *entire* pretraining objective (Part III). Everything else — the transformer that computes $p_\theta$, the kernels that make it fast, the alignment that reshapes it, the infrastructure that scales it — is in service of this one cross-entropy loss and the things you can do with the distribution it produces. We can even write the heart of it in three lines of PyTorch, and we will return to this snippet many times:
+這就是預訓練目標的全部（第 III 部）。其餘的一切，包括算出 $p_\theta$ 的 Transformer、讓它變快的 kernel、把它重新塑形的對齊、把它放大的基礎設施，都是在服務這一條交叉熵損失，以及你能用它所產生的分佈做的事。它的核心甚至可以寫成三行 PyTorch。我們會多次回到這段程式：
 
 ```python
 import torch
 import torch.nn.functional as F
 
-# logits: (batch, seq_len, vocab)   targets: (batch, seq_len) of token ids
+# logits：(batch, seq_len, vocab)   targets：(batch, seq_len)，內容是 token id
 def lm_loss(logits, targets):
-    # shift so that position t predicts token t+1
+    # 移位，讓位置 t 預測第 t+1 個詞元
     logits = logits[:, :-1, :].reshape(-1, logits.size(-1))
     targets = targets[:, 1:].reshape(-1)
-    return F.cross_entropy(logits, targets)   # mean negative log-likelihood
+    return F.cross_entropy(logits, targets)   # 平均負對數似然
 ```
 
-If that snippet feels both trivial and mysterious — *trivial* because it is three lines, *mysterious* because it somehow produces systems that write code and prove theorems — then you are in exactly the right frame of mind. This book exists to dissolve the mystery without losing the awe.
+如果這段程式讓你覺得又平凡又神秘，那你的狀態就對了。平凡，是因為只有三行。神秘，是因為它竟然能長出會寫程式、會證明定理的系統。本書要拆掉那層神秘，同時把敬畏留下來。
 
-## How the book is organized
+## 本書如何組織
 
-The book has fifteen parts. You can read it front to back as a course, or treat it as a reference and parachute into any chapter; each is written to stand on its own while linking generously to its neighbors.
+全書十五部。可以從前讀到後，當成一門課；也可以當成手冊，直接跳進任何一章。每一章都能獨立讀，也大量連到鄰近的章。
 
-| Part | Theme | What you will be able to do |
+| 部 | 主題 | 讀完你能做什麼 |
 |------|-------|------------------------------|
-| I | Math & systems foundations | Reason about gradients, floats, and GPUs |
-| II | The transformer | Build a GPT from scratch |
-| III | Pretraining at scale | Plan and run a distributed training job |
-| IV | Kernels & efficiency | Explain FlashAttention; quantize a model |
-| V | Post-training & alignment | Implement SFT, LoRA, DPO, GRPO |
-| VI | RL infrastructure | Understand veRL, TRL, async RL systems |
-| VII | Inference & serving | Tune vLLM/SGLang; reason about latency |
-| VIII | Agents & harness | Build a tool-using coding agent |
-| IX | Retrieval & RAG | Design a grounded retrieval system |
-| X | Multimodal & frontiers | Connect vision/audio to an LLM |
-| XI | Evaluation | Measure models honestly |
-| XII | Production & MLOps | Operate LLMs safely at scale |
-| XIII | The Google ML interview | Walk in prepared |
-| App. | Glossary, math sheet, papers | Look things up fast |
+| I | 數學與系統基礎 | 推理梯度、浮點數與 GPU |
+| II | Transformer | 從零做出一個 GPT |
+| III | 大規模預訓練 | 規劃並跑一場分散式訓練 |
+| IV | Kernel 與效率 | 解釋 FlashAttention，並把模型量化 |
+| V | 後訓練與對齊 | 實作 SFT、LoRA、DPO、GRPO |
+| VI | 強化學習基礎設施 | 理解 veRL、TRL 與非同步 RL 系統 |
+| VII | 推論與服務 | 調校 vLLM／SGLang，並分析延遲 |
+| VIII | 代理與駕馭層 | 做出會用工具的程式代理 |
+| IX | 檢索與 RAG | 設計有依據的檢索系統 |
+| X | 多模態與前沿 | 把視覺／音訊接到 LLM |
+| XI | 評測 | 誠實地度量模型 |
+| XII | 生產與 MLOps | 在規模上安全地運行 LLM |
+| XIII | Google 機器學習面試 | 有準備地走進面試 |
+| 附錄 | 術語表、數學速查、論文 | 快速查找 |
 
-!!! key "Conventions used in this book"
-    - **Math** is rendered with KaTeX; inline like $\sigma(x) = \frac{1}{1+e^{-x}}$ and displayed in its own block.
-    - **Code** is syntax-highlighted and copyable; most snippets are runnable as written, and from-scratch reconstructions are collected in the [From-Scratch Code Index](../99-appendix/05-from-scratch-index.html).
-    - **🎯 Interview Corners** flag interview-critical ideas.
-    - **🔑 Key-idea** boxes (like this one) summarize what you must remember.
-    - **⚠️ Warning** boxes flag common mistakes and footguns.
-    - **🧪 Example** boxes contain worked, concrete numerical examples.
+!!! key "本書體例"
+    - **數學**用 KaTeX 排版。行內如 $\sigma(x) = \frac{1}{1+e^{-x}}$，獨立成行的放在自己的區塊。
+    - **程式**有語法著色，也可以複製。大多數片段照寫就能跑。從零重建的程式收在[從零實作程式碼索引](../99-appendix/05-from-scratch-index.html)。
+    - **🎯 面試角**標出面試會卡人的想法。
+    - **🔑 關鍵概念**框（就像這個）摘要你必須記住的東西。
+    - **⚠️ 警告**框標出常見錯誤，以及容易踩中的陷阱。
+    - **🧪 範例**框放具體的、算過數字的例子。
 
-!!! warning "A note on a fast-moving field"
-    This book reflects the state of the art as of **2026**, deliberately covering the most recent ideas in RL infrastructure (GRPO and its descendants, async/disaggregated RL, FP8 training), serving (disaggregated prefill/decode, RadixAttention), and agents (MCP, harness engineering). Specific numbers and library APIs will drift; the *concepts and the constraints they answer to* are durable. When in doubt, re-derive from the physics: bytes moved, FLOPs done, bits of precision, samples of data.
+!!! warning "關於一個變得很快的領域"
+    本書反映的是 **2026** 年的技術現況，刻意寫進最近的想法：強化學習基礎設施（GRPO 及其後繼、非同步與解耦式 RL、FP8 訓練）、推論服務（解耦的預填／解碼、RadixAttention），以及代理（MCP、駕馭層工程）。具體數字和程式庫 API 會漂。站得住的是概念，以及這些概念在回應的約束。拿不準的時候，就從物理量重新推：搬了多少位元組、做了多少 FLOPs、用了幾位元的精度、看了多少筆數據。
 
-## A ten-day on-ramp (if the clock is ticking)
+## 如果時間只夠十天
 
-If you are reading this with an interview looming, do not try to read 2,000 pages in ten days. Go straight to the [Ten-Day Study Plan](../interview/08-ten-day-study-plan.html) in the companion guide, which sequences a focused subset of chapters, then circle back to the rest over the months that follow. Depth compounds; the plan front-loads the highest-yield concepts.
+如果面試已經排在眼前，不要想在十天裡讀完兩千頁。直接去配套指南裡的[十日讀書計劃](../interview/08-ten-day-study-plan.html)。它把高產出的章節排成一個有焦點的子集，其餘的留到之後的幾個月再補。深度會複利。這份計劃把產出最高的概念放在前面。
 
-Now turn the page, and let us start where everything starts: with the linear algebra that lives inside a single matrix multiply.
+現在翻頁。一切開始的地方，是藏在一次矩陣乘法裡的線性代數。
 
-!!! note "Where to go next"
-    Continue to **[Linear Algebra for Deep Learning](../01-foundations/01-linear-algebra.html)**, or jump to the [full table of contents](../index.html).
+!!! note "接著讀哪裡"
+    繼續讀 **[深度學習所需的線性代數](../01-foundations/01-linear-algebra.html)**，或回到[完整目錄](../index.html)。

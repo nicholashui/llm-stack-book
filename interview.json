@@ -1,69 +1,69 @@
 {
-  "title": "ML/LLM Interview Companion",
-  "subtitle": "Prep for Top-Tier ML & LLM Engineering Interviews",
-  "tagline": "A focused companion to The LLM Stack: frameworks, model answers, worked system-design cases, and a study plan for ML/LLM interview loops at big-tech and frontier labs.",
-  "author": "Companion to The LLM Stack",
+  "title": "ML／LLM 面試配套",
+  "subtitle": "準備一線機器學習與 LLM 工程面試",
+  "tagline": "《LLM 技術棧》的聚焦配套：框架、範答、系統設計實例，以及大廠與前沿實驗室 ML／LLM 面試的讀書計劃。",
+  "author": "《LLM 技術棧》配套",
   "parent": {
-    "title": "The LLM Stack",
+    "title": "LLM 技術棧",
     "href": "../index.html"
   },
   "parts": [
     {
       "dir": "13-interview-prep",
-      "title": "The ML/LLM Interview \u2014 Companion Prep",
+      "title": "ML／LLM 面試 — 配套準備",
       "chapters": [
         {
           "file": "01-google-ml-interview-format",
-          "title": "The ML Engineer Interview: Formats & What's Tested",
+          "title": "機器學習工程師面試：形式與考點",
           "scope": "What top-tier ML/LLM interview loops actually test across companies (ML breadth + depth, ML system design, coding, project deep-dive), the common rubrics, how to drive the conversation, signals interviewers look for, time management, common failure modes. Use Google's ML domain round and the FAANG/frontier-lab loops as concrete examples. Strategic overview.",
           "words": 4500,
           "model": "opus"
         },
         {
           "file": "02-ml-breadth-rapidfire",
-          "title": "ML Breadth: Rapid-Fire Concepts & Model Answers",
-          "scope": "A curated bank of breadth Q&A: bias-variance, regularization, overfitting, optimization, batchnorm/dropout, transformers, attention, embeddings, evaluation metrics, class imbalance, gradient issues \u2014 each with a crisp 'model answer'. Dense and high-yield.",
+          "title": "機器學習廣度：快問快答與範答",
+          "scope": "A curated bank of breadth Q&A: bias-variance, regularization, overfitting, optimization, batchnorm/dropout, transformers, attention, embeddings, evaluation metrics, class imbalance, gradient issues — each with a crisp 'model answer'. Dense and high-yield.",
           "words": 6000,
           "model": "opus"
         },
         {
           "file": "03-ml-system-design-framework",
-          "title": "ML System Design: A Framework",
+          "title": "機器學習系統設計：一套框架",
           "scope": "A repeatable framework: clarify -> requirements/SLOs -> data -> features -> model -> training -> eval -> serving -> monitoring -> iteration. The structure to impose on any ML-design prompt, with checklists and tradeoff talking points.",
           "words": 5500,
           "model": "opus"
         },
         {
           "file": "04-ml-system-design-cases",
-          "title": "ML System Design: Worked Cases",
+          "title": "機器學習系統設計：實例演練",
           "scope": "Fully worked designs: (1) a recommendation/ranking system, (2) search/semantic retrieval, (3) an LLM serving platform, (4) a RAG assistant, (5) a content-moderation system, (6) a fine-tuning/RLHF pipeline. Each end-to-end using the framework. The centerpiece prep chapter.",
           "words": 7000,
           "model": "opus"
         },
         {
           "file": "05-coding-for-ml-interviews",
-          "title": "Coding for ML Interviews",
+          "title": "機器學習面試中的程式題",
           "scope": "Likely coding: implement attention/softmax/k-means/logistic-regression/backprop from scratch, plus DS&A staples (arrays, hashing, two-pointers, DP, graphs) framed for ML candidates; numpy fluency. Runnable solutions. Practice-oriented.",
           "words": 6000,
           "model": "opus"
         },
         {
           "file": "06-llm-deepdive-questions",
-          "title": "LLM-Specific Deep-Dive Questions",
-          "scope": "The questions a strong LLM candidate must nail: explain attention/RoPE/KV-cache/flash-attention, why GQA, DPO vs PPO, GRPO, quantization, scaling laws, MoE, speculative decoding, RLHF, hallucination causes \u2014 with model answers cross-linked to chapters.",
+          "title": "LLM 專題深問",
+          "scope": "The questions a strong LLM candidate must nail: explain attention/RoPE/KV-cache/flash-attention, why GQA, DPO vs PPO, GRPO, quantization, scaling laws, MoE, speculative decoding, RLHF, hallucination causes — with model answers cross-linked to chapters.",
           "words": 6500,
           "model": "opus"
         },
         {
           "file": "07-behavioral-googleyness",
-          "title": "Behavioral, Leadership & Project Deep-Dive",
+          "title": "行為、領導力與專案深挖",
           "scope": "STAR method, the project deep-dive (your RL/LLM work), leadership signals top labs and big-tech look for (ownership, collaboration, impact), handling 'tell me about a hard bug', impact framing, questions to ask. Rounding out the loop.",
           "words": 4500,
           "model": "sonnet"
         },
         {
           "file": "08-ten-day-study-plan",
-          "title": "The 10-Day Study Plan & Final Checklist",
+          "title": "十日讀書計劃與最後清單",
           "scope": "A concrete day-by-day plan (mapping to this book's chapters) for the 10 days before an ML/LLM interview, a spaced-repetition flashcard set of must-knows, a final-48-hours checklist, and a 'reset your nerves' page. Actionable and motivating.",
           "words": 4500,
           "model": "opus"
